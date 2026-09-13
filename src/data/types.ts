@@ -145,6 +145,7 @@ export type WorryEntry = {
   id: string;
   user_id: string;
   worry_text: string;
+  resolved_at: string | null;
   created_at: string;
 };
 

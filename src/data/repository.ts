@@ -472,9 +472,21 @@ export const ritualRepo = listRepo<Ritual>("rituals", "rituals", () => ({
   note: null,
 }));
 
-export const worryRepo = listRepo<WorryEntry>("worries", "worry_entries", () => ({
+const worryList = listRepo<WorryEntry>("worries", "worry_entries", () => ({
   worry_text: "",
+  resolved_at: null,
 }));
+
+export const worryRepo = {
+  ...worryList,
+  /** Marks a worry resolved without deleting it, so history is preserved. */
+  async resolve(userId: string, id: string): Promise<WorryEntry[]> {
+    const list = await worryList.list(userId);
+    const row = list.find((item) => item.id === id);
+    if (!row) return list;
+    return worryList.save(userId, { ...row, resolved_at: new Date().toISOString() });
+  },
+};
 
 export const gratitudeRepo = listRepo<GratitudeEntry>("gratitude", "gratitude_entries", () => ({
   gratitude_text: "",

@@ -1,0 +1,1 @@
+ALTER TABLE public.worry_entries ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMPTZ;
