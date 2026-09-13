@@ -233,7 +233,7 @@ export function CloudAudioSession({
         }}
         className="mt-5 h-2 w-full cursor-pointer appearance-none rounded-full bg-muted outline-none [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
         style={{
-          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${complete ? 100 : progress}%, hsl(var(--muted)) ${complete ? 100 : progress}%, hsl(var(--muted)) 100%)`,
+          background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${complete ? 100 : progress}%, var(--muted) ${complete ? 100 : progress}%, var(--muted) 100%)`,
           touchAction: "none",
         }}
       />
