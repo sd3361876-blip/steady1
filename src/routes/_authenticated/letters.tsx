@@ -23,9 +23,7 @@ import { letterRepo } from "@/data/repository";
 import { useAuth } from "@/hooks/useAuth";
 import { activity } from "@/lib/badgeActivity";
 import { analytics, humanizeError } from "@/lib/analytics";
-import { EMOTIONS } from "@/lib/content";
 import { haptic } from "@/lib/native/haptics";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/letters")({
   head: () => ({
@@ -50,7 +48,6 @@ function LettersScreen() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [emotion, setEmotion] = useState<string | null>(null);
 
   useEffect(() => {
     analytics.screen("letters");
@@ -64,7 +61,7 @@ function LettersScreen() {
 
   const add = useMutation({
     mutationFn: async () =>
-      letterRepo.save(userId, { title: title.trim() || null, body: body.trim(), emotion }),
+      letterRepo.save(userId, { title: title.trim() || null, body: body.trim(), emotion: null }),
     onSuccess: (rows) => {
       activity.featureUsed("letters");
       queryClient.setQueryData(["letters", userId], rows);
@@ -72,7 +69,6 @@ function LettersScreen() {
       toast(t("letters.savedToast"));
       setTitle("");
       setBody("");
-      setEmotion(null);
       setOpen(false);
     },
     onError: (error) => toast.error(humanizeError(error)),
@@ -110,23 +106,6 @@ function LettersScreen() {
                   className="h-12 rounded-2xl"
                   placeholder={t("letters.titlePlaceholder")}
                 />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {EMOTIONS.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setEmotion(item)}
-                    className={cn(
-                      "press rounded-full border border-border px-3 py-1.5 text-sm",
-                      emotion === item
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "bg-card",
-                    )}
-                  >
-                    {item}
-                  </button>
-                ))}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="letter-body">{t("letters.yourLetter")}</Label>
