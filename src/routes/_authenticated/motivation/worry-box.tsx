@@ -5,7 +5,18 @@ import { toast } from "sonner";
 
 import { SubScreen } from "@/components/SubScreen";
 import { WorryBoxArt } from "@/components/illustrations/wellness";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { worryRepo } from "@/data/repository";
 import { useAuth } from "@/hooks/useAuth";
@@ -46,6 +57,8 @@ function WorryBoxScreen() {
   const [stage, setStage] = useState<Stage>("box");
   const [text, setText] = useState("");
   const [saved, setSaved] = useState<WorryEntry | null>(null);
+  const [openWorry, setOpenWorry] = useState<WorryEntry | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<WorryEntry | null>(null);
 
   const worries = useQuery({
     queryKey: ["worries", userId],
@@ -65,7 +78,28 @@ function WorryBoxScreen() {
     onError: (error) => toast.error(humanizeError(error)),
   });
 
-  const count = worries.data?.length ?? 0;
+  const resolve = useMutation({
+    mutationFn: async (id: string) => worryRepo.resolve(userId, id),
+    onSuccess: (rows) => {
+      queryClient.setQueryData(["worries", userId], rows);
+      setOpenWorry(null);
+      haptic.success();
+      toast.success("Marked as resolved.");
+    },
+    onError: (error) => toast.error(humanizeError(error)),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => worryRepo.remove(userId, id),
+    onSuccess: (rows) => {
+      queryClient.setQueryData(["worries", userId], rows);
+      setConfirmDelete(null);
+      setOpenWorry(null);
+      haptic.success();
+      toast.success("Worry deleted.");
+    },
+    onError: (error) => toast.error(humanizeError(error)),
+  });
 
   if (stage === "write") {
     return (
@@ -121,6 +155,10 @@ function WorryBoxScreen() {
     );
   }
 
+  const all = worries.data ?? [];
+  const active = all.filter((item) => !item.resolved_at);
+  const resolved = all.filter((item) => item.resolved_at);
+
   return (
     <SubScreen
       title="Worry Box"
@@ -128,13 +166,10 @@ function WorryBoxScreen() {
       headerClassName="bg-sky/40"
     >
       <div className="flex flex-col items-center">
-        <div className="relative">
-          <WorryBoxArt className="w-56" />
-          <CloudCounter count={count} loading={worries.isLoading} />
-        </div>
+        <WorryBoxArt className="w-44" />
 
         <Button
-          className="press mt-10 h-12 w-full rounded-2xl"
+          className="press mt-8 h-12 w-full rounded-2xl"
           onClick={() => {
             haptic.select();
             setStage("write");
@@ -143,19 +178,128 @@ function WorryBoxScreen() {
           Write Worries
         </Button>
       </div>
+
+      {worries.isLoading ? null : all.length === 0 ? (
+        <div className="soft-card mt-8 rounded-3xl p-5 text-center">
+          <p className="font-medium">Nothing in the box yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Write down what&apos;s on your mind — putting it here makes it easier to carry.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8 space-y-6">
+          {active.length > 0 ? (
+            <section>
+              <h2 className="text-sm font-semibold text-muted-foreground">Your worries</h2>
+              <ul className="mt-3 space-y-3">
+                {active.map((item) => (
+                  <li key={item.id}>
+                    <WorryRow item={item} onOpen={() => setOpenWorry(item)} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {resolved.length > 0 ? (
+            <section>
+              <h2 className="text-sm font-semibold text-muted-foreground">Resolved</h2>
+              <ul className="mt-3 space-y-3">
+                {resolved.map((item) => (
+                  <li key={item.id}>
+                    <WorryRow item={item} onOpen={() => setOpenWorry(item)} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+        </div>
+      )}
+
+      <Dialog open={Boolean(openWorry)} onOpenChange={(open) => !open && setOpenWorry(null)}>
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>{openWorry?.resolved_at ? "Resolved worry" : "Your worry"}</DialogTitle>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground">
+            {openWorry ? formatLongDate(openWorry.created_at) : ""}
+          </p>
+          <p className="max-h-[45vh] overflow-y-auto whitespace-pre-wrap text-[0.95rem] leading-relaxed">
+            {openWorry?.worry_text}
+          </p>
+          <div className="mt-2 space-y-2">
+            {openWorry && !openWorry.resolved_at ? (
+              <Button
+                className="press h-12 w-full rounded-2xl"
+                disabled={resolve.isPending}
+                onClick={() => {
+                  haptic.light();
+                  resolve.mutate(openWorry.id);
+                }}
+              >
+                Mark as resolved
+              </Button>
+            ) : null}
+            <Button
+              variant="secondary"
+              className="press h-12 w-full rounded-2xl text-destructive"
+              onClick={() => {
+                haptic.light();
+                setConfirmDelete(openWorry);
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={Boolean(confirmDelete)}
+        onOpenChange={(open) => !open && setConfirmDelete(null)}
+      >
+        <AlertDialogContent className="rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this worry?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently removes it from your Worry Box. This can&apos;t be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-2xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-2xl"
+              onClick={() => confirmDelete && remove.mutate(confirmDelete.id)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </SubScreen>
   );
 }
 
-function CloudCounter({ count, loading }: { count: number; loading: boolean }) {
+function WorryRow({ item, onOpen }: { item: WorryEntry; onOpen: () => void }) {
   return (
-    <span className="absolute -right-3 -top-2 flex items-center">
-      <span className="relative flex items-center justify-center rounded-full bg-sky px-4 py-2 text-xs font-medium text-on-tint shadow-sm">
-        <span className="absolute -bottom-1 left-3 size-3 rounded-full bg-sky" aria-hidden />
-        <span className="absolute -bottom-2.5 left-1 size-2 rounded-full bg-sky" aria-hidden />
-        {loading ? "…" : `${count} ${count === 1 ? "worry" : "worries"}`}
-      </span>
-    </span>
+    <button
+      type="button"
+      onClick={() => {
+        haptic.light();
+        onOpen();
+      }}
+      className="press soft-card w-full rounded-3xl p-4 text-left"
+    >
+      <p className="text-xs text-muted-foreground">{formatLongDate(item.created_at)}</p>
+      <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-[0.95rem] leading-relaxed">
+        {item.worry_text}
+      </p>
+      {item.resolved_at ? (
+        <span className="mt-2 inline-flex items-center rounded-full bg-mint px-2.5 py-1 text-xs font-medium text-on-tint">
+          Resolved
+        </span>
+      ) : null}
+    </button>
   );
 }
 
