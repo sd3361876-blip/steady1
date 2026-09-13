@@ -213,12 +213,30 @@ export function CloudAudioSession({
         </p>
       </div>
 
-      <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full rounded-full bg-primary transition-[width] duration-500"
-          style={{ width: `${complete ? 100 : progress}%` }}
-        />
-      </div>
+      {/* Seekable progress bar: a native range input so touch (Android) and
+          pointer (web) dragging both move playback position. */}
+      <input
+        type="range"
+        min={0}
+        max={duration > 0 ? duration : 0}
+        step={0.1}
+        value={complete ? duration : Math.min(elapsed, duration || 0)}
+        disabled={duration <= 0}
+        aria-label="Seek audio position"
+        onChange={(event) => {
+          const audio = audioRef.current;
+          const next = Number(event.target.value);
+          if (!audio || !Number.isFinite(next)) return;
+          audio.currentTime = next;
+          setElapsed(next);
+          if (complete) setComplete(false);
+        }}
+        className="mt-5 h-2 w-full cursor-pointer appearance-none rounded-full bg-muted outline-none [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
+        style={{
+          background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${complete ? 100 : progress}%, hsl(var(--muted)) ${complete ? 100 : progress}%, hsl(var(--muted)) 100%)`,
+          touchAction: "none",
+        }}
+      />
 
       {complete ? (
         <>
