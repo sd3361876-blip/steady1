@@ -170,6 +170,13 @@ export function SosToolkit({
                         void navigate({ to: "/healing-tools" });
                         return;
                       }
+                      if (key === "letters") {
+                        // Open the real Unsent Letters feature rather than an
+                        // in-sheet, read-only list of letters.
+                        onOpenChange(false);
+                        void navigate({ to: "/letters" });
+                        return;
+                      }
                       setTool(key);
                     }}
                     className={cn(
