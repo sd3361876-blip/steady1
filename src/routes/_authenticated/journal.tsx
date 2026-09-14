@@ -28,7 +28,13 @@ export const Route = createFileRoute("/_authenticated/journal")({
       <ActivityListScreen
         title={t("journal.title")}
         subtitle={t("journal.subtitle")}
-        illustration={<JournalIllustration />}
+        banner={
+          <img
+            src={journalBanner.url}
+            alt=""
+            className="h-48 w-full object-cover"
+          />
+        }
         cacheKey="journal"
         repo={journalRepo}
         mainField="body"
