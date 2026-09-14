@@ -33,6 +33,7 @@ import { Route as AuthenticatedPicturesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedQuestionnaireRouteImport } from './routes/_authenticated/questionnaire'
 import { Route as AuthenticatedRitualsRouteImport } from './routes/_authenticated/rituals'
+import { Route as AuthenticatedStartTrialRouteImport } from './routes/_authenticated/start-trial'
 import { Route as AuthenticatedStreakUnlockRouteImport } from './routes/_authenticated/streak-unlock'
 import { Route as AuthenticatedSubmitBugRouteImport } from './routes/_authenticated/submit-bug'
 import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticated/triggers'
@@ -179,6 +180,11 @@ const AuthenticatedRitualsRoute = AuthenticatedRitualsRouteImport.update({
   path: '/rituals',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedStartTrialRoute = AuthenticatedStartTrialRouteImport.update({
+  id: '/start-trial',
+  path: '/start-trial',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedStreakUnlockRoute =
   AuthenticatedStreakUnlockRouteImport.update({
     id: '/streak-unlock',
@@ -312,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/questionnaire': typeof AuthenticatedQuestionnaireRoute
   '/rituals': typeof AuthenticatedRitualsRoute
+  '/start-trial': typeof AuthenticatedStartTrialRoute
   '/streak-unlock': typeof AuthenticatedStreakUnlockRoute
   '/submit-bug': typeof AuthenticatedSubmitBugRoute
   '/triggers': typeof AuthenticatedTriggersRoute
@@ -356,6 +363,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/questionnaire': typeof AuthenticatedQuestionnaireRoute
   '/rituals': typeof AuthenticatedRitualsRoute
+  '/start-trial': typeof AuthenticatedStartTrialRoute
   '/streak-unlock': typeof AuthenticatedStreakUnlockRoute
   '/submit-bug': typeof AuthenticatedSubmitBugRoute
   '/triggers': typeof AuthenticatedTriggersRoute
@@ -402,6 +410,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/questionnaire': typeof AuthenticatedQuestionnaireRoute
   '/_authenticated/rituals': typeof AuthenticatedRitualsRoute
+  '/_authenticated/start-trial': typeof AuthenticatedStartTrialRoute
   '/_authenticated/streak-unlock': typeof AuthenticatedStreakUnlockRoute
   '/_authenticated/submit-bug': typeof AuthenticatedSubmitBugRoute
   '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
@@ -448,6 +457,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questionnaire'
     | '/rituals'
+    | '/start-trial'
     | '/streak-unlock'
     | '/submit-bug'
     | '/triggers'
@@ -492,6 +502,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/questionnaire'
     | '/rituals'
+    | '/start-trial'
     | '/streak-unlock'
     | '/submit-bug'
     | '/triggers'
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/questionnaire'
     | '/_authenticated/rituals'
+    | '/_authenticated/start-trial'
     | '/_authenticated/streak-unlock'
     | '/_authenticated/submit-bug'
     | '/_authenticated/triggers'
@@ -742,6 +754,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRitualsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/start-trial': {
+      id: '/_authenticated/start-trial'
+      path: '/start-trial'
+      fullPath: '/start-trial'
+      preLoaderRoute: typeof AuthenticatedStartTrialRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/streak-unlock': {
       id: '/_authenticated/streak-unlock'
       path: '/streak-unlock'
@@ -896,6 +915,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedQuestionnaireRoute: typeof AuthenticatedQuestionnaireRoute
   AuthenticatedRitualsRoute: typeof AuthenticatedRitualsRoute
+  AuthenticatedStartTrialRoute: typeof AuthenticatedStartTrialRoute
   AuthenticatedStreakUnlockRoute: typeof AuthenticatedStreakUnlockRoute
   AuthenticatedSubmitBugRoute: typeof AuthenticatedSubmitBugRoute
   AuthenticatedTriggersRoute: typeof AuthenticatedTriggersRoute
@@ -931,6 +951,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedQuestionnaireRoute: AuthenticatedQuestionnaireRoute,
   AuthenticatedRitualsRoute: AuthenticatedRitualsRoute,
+  AuthenticatedStartTrialRoute: AuthenticatedStartTrialRoute,
   AuthenticatedStreakUnlockRoute: AuthenticatedStreakUnlockRoute,
   AuthenticatedSubmitBugRoute: AuthenticatedSubmitBugRoute,
   AuthenticatedTriggersRoute: AuthenticatedTriggersRoute,

@@ -215,7 +215,9 @@ function Questionnaire() {
       analytics.track("questionnaire_completed");
       activity.onboardingDone();
       activity.profileSetupDone();
-      void navigate({ to: "/home", replace: true });
+      // Eligible users must activate their free trial before entering the app;
+      // the trial screen forwards everyone else straight to Home.
+      void navigate({ to: "/start-trial", replace: true });
     } catch (error) {
       analytics.error(error, { stage: "questionnaire" });
       toast.error(humanizeError(error));
