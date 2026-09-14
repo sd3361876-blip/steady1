@@ -4,7 +4,7 @@ import { lazy, Suspense, useEffect } from "react";
 
 import { ActivityListScreen } from "@/components/ActivityListScreen";
 import { journalRepo } from "@/data/repository";
-import journalBanner from "@/assets/journal-banner.png.asset.json";
+import journalBanner from "@/assets/journal-banner.jpg";
 
 const importSuccessAnimation = () => import("@/components/SuccessLottieAnimation");
 const SuccessLottieAnimation = lazy(importSuccessAnimation);
@@ -30,8 +30,10 @@ export const Route = createFileRoute("/_authenticated/journal")({
         subtitle={t("journal.subtitle")}
         banner={
           <img
-            src={journalBanner.url}
+            src={journalBanner}
             alt=""
+            loading="eager"
+            decoding="async"
             className="h-48 w-full object-cover"
           />
         }
