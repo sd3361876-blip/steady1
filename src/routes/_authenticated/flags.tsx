@@ -307,6 +307,7 @@ function FlagsScreen() {
               <video
                 src={redFlagSuccessVideo}
                 autoPlay
+                muted
                 playsInline
                 preload="auto"
                 onEnded={dismissSuccess}
