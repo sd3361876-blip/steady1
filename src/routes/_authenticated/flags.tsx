@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, Circle, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+import redFlagSuccessVideo from "@/assets/red-flag-success.mp4";
 import { AppShell } from "@/components/AppShell";
 import { SoftCard } from "@/components/SoftCard";
 import { FlagsIllustration } from "@/components/illustrations";
@@ -68,10 +70,37 @@ function FlagsScreen() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [category, setCategory] = useState<string>(FLAG_CATEGORIES[0]?.key ?? "other");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     analytics.screen("flags");
   }, []);
+
+  useEffect(() => {
+    if (!showSuccess) return;
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    const previousTouchAction = body.style.touchAction;
+    body.style.overflow = "hidden";
+    body.style.touchAction = "none";
+    return () => {
+      body.style.overflow = previousOverflow;
+      body.style.touchAction = previousTouchAction;
+    };
+  }, [showSuccess]);
+
+  useEffect(() => {
+    return () => {
+      if (successTimer.current) clearTimeout(successTimer.current);
+    };
+  }, []);
+
+  const dismissSuccess = () => {
+    if (successTimer.current) clearTimeout(successTimer.current);
+    successTimer.current = null;
+    setShowSuccess(false);
+  };
 
   const flags = useQuery({
     queryKey: ["flags", userId],
@@ -89,6 +118,9 @@ function FlagsScreen() {
       });
     },
     onSuccess: (rows) => {
+      setShowSuccess(true);
+      if (successTimer.current) clearTimeout(successTimer.current);
+      successTimer.current = setTimeout(dismissSuccess, 8000);
       activity.featureUsed("flags");
       queryClient.setQueryData(["flags", userId], rows);
       haptic.success();
@@ -262,6 +294,30 @@ function FlagsScreen() {
           )}
         </section>
       </div>
+      {showSuccess && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              role="status"
+              aria-live="polite"
+              style={{ zIndex: 2147483647 }}
+              className="fixed inset-0 isolate flex items-center justify-center overflow-hidden bg-background/85 p-4 backdrop-blur-md animate-fade-in dark:bg-background/90"
+              onPointerDown={(event) => event.preventDefault()}
+              onTouchMove={(event) => event.preventDefault()}
+            >
+              <video
+                src={redFlagSuccessVideo}
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                onEnded={dismissSuccess}
+                className="max-h-full max-w-full object-contain"
+                aria-hidden
+              />
+            </div>,
+            document.body,
+          )
+        : null}
     </AppShell>
   );
 }
