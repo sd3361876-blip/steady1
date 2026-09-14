@@ -5,7 +5,7 @@ import { clearGuidedContext, getGuidedContext } from "@/lib/dailyExercise/guided
 import { isNative } from "./platform";
 
 /** Screens that act as a root destination: back here should background the app. */
-const ROOT_PATHS = new Set(["/", "/home", "/auth"]);
+const ROOT_PATHS = new Set(["/", "/home", "/auth", "/start-trial"]);
 
 /** Closes the topmost Radix overlay (dialog/drawer/sheet), if one is open. */
 function closeTopOverlay(): boolean {
