@@ -142,6 +142,7 @@ export function ActivityListScreen({
   return (
     <AppShell title={title} subtitle={subtitle}>
       {illustration ? <div className="mx-auto mb-5 mt-1 w-40">{illustration}</div> : null}
+      {banner ? <div className="mb-5 mt-2 w-full overflow-hidden rounded-2xl">{banner}</div> : null}
       <SoftCard className="space-y-3">
         {multiline ? (
           <Textarea
