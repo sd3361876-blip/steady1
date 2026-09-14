@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { lazy, Suspense, useEffect } from "react";
 
 import { ActivityListScreen } from "@/components/ActivityListScreen";
-import { JournalIllustration } from "@/components/illustrations";
 import { journalRepo } from "@/data/repository";
+import journalBanner from "@/assets/journal-banner.png.asset.json";
 
 const importSuccessAnimation = () => import("@/components/SuccessLottieAnimation");
 const SuccessLottieAnimation = lazy(importSuccessAnimation);
