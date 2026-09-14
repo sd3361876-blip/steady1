@@ -36,6 +36,7 @@ export function ActivityListScreen({
   suggestions = [],
   emptyText,
   illustration,
+  banner,
   successAnimation,
 }: {
   title: string;
@@ -50,6 +51,8 @@ export function ActivityListScreen({
   suggestions?: string[];
   emptyText: string;
   illustration?: ReactNode;
+  /** Full-width rounded banner rendered below the title/subtitle. */
+  banner?: ReactNode;
   /**
    * Optional Lottie/animation renderer shown centered on screen after a
    * successful save. When provided, a full-screen overlay is rendered on every
