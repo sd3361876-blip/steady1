@@ -36,6 +36,7 @@ export function ActivityListScreen({
   suggestions = [],
   emptyText,
   illustration,
+  banner,
   successAnimation,
 }: {
   title: string;
@@ -50,6 +51,8 @@ export function ActivityListScreen({
   suggestions?: string[];
   emptyText: string;
   illustration?: ReactNode;
+  /** Full-width rounded banner rendered below the title/subtitle. */
+  banner?: ReactNode;
   /**
    * Optional Lottie/animation renderer shown centered on screen after a
    * successful save. When provided, a full-screen overlay is rendered on every
@@ -139,6 +142,7 @@ export function ActivityListScreen({
   return (
     <AppShell title={title} subtitle={subtitle}>
       {illustration ? <div className="mx-auto mb-5 mt-1 w-40">{illustration}</div> : null}
+      {banner ? <div className="mb-5 mt-2 w-full overflow-hidden rounded-2xl">{banner}</div> : null}
       <SoftCard className="space-y-3">
         {multiline ? (
           <Textarea
