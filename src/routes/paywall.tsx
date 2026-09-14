@@ -14,6 +14,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { FreeTrialCard } from "@/components/FreeTrialCard";
 import { SoftCard } from "@/components/SoftCard";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -136,6 +137,8 @@ function Paywall() {
           );
         })}
       </SoftCard>
+
+      <FreeTrialCard />
 
       <div className="mt-6 space-y-3">
         {offerings.status === "loading" ? (

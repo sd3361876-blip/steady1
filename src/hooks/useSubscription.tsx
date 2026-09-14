@@ -27,6 +27,8 @@ type SubscriptionValue = {
   busy: boolean;
   subscribe: () => Promise<void>;
   restore: () => Promise<void>;
+  /** Re-reads the entitlement from RevenueCat (e.g. after a server-side grant). */
+  refresh: () => Promise<void>;
   offerings: OfferingsState;
   reloadOfferings: () => Promise<void>;
   purchase: (packageId: string) => Promise<void>;
@@ -38,6 +40,7 @@ const SubscriptionContext = createContext<SubscriptionValue>({
   busy: false,
   subscribe: async () => {},
   restore: async () => {},
+  refresh: async () => {},
   offerings: { status: "loading" },
   reloadOfferings: async () => {},
   purchase: async () => {},
@@ -140,6 +143,10 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const refresh = useCallback(async () => {
+    setEntitlement(await refreshEntitlement());
+  }, []);
+
   const restore = useCallback(async () => {
     setBusy(true);
     try {
@@ -165,6 +172,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
         busy,
         subscribe,
         restore,
+        refresh,
         offerings,
         reloadOfferings,
         purchase,

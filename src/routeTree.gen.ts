@@ -47,6 +47,7 @@ import { Route as AuthenticatedMotivationMeditationRouteImport } from './routes/
 import { Route as AuthenticatedMotivationWalkRouteImport } from './routes/_authenticated/motivation/walk'
 import { Route as AuthenticatedMotivationWorryBoxRouteImport } from './routes/_authenticated/motivation/worry-box'
 import { Route as ApiPublicDriveRouteImport } from './routes/api/public/drive'
+import { Route as ApiPublicProTrialRouteImport } from './routes/api/public/pro-trial'
 import { Route as OauthGoogleDriveReturnRouteImport } from './routes/oauth/google-drive/return'
 import { Route as AuthenticatedMotivationHealingAudioIndexRouteImport } from './routes/_authenticated/motivation/healing-audio/index'
 import { Route as AuthenticatedMotivationHealingAudioCategoryIdRouteImport } from './routes/_authenticated/motivation/healing-audio/$categoryId'
@@ -258,6 +259,11 @@ const ApiPublicDriveRoute = ApiPublicDriveRouteImport.update({
   path: '/api/public/drive',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicProTrialRoute = ApiPublicProTrialRouteImport.update({
+  id: '/api/public/pro-trial',
+  path: '/api/public/pro-trial',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OauthGoogleDriveReturnRoute = OauthGoogleDriveReturnRouteImport.update({
   id: '/oauth/google-drive/return',
   path: '/oauth/google-drive/return',
@@ -319,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/api/public/drive': typeof ApiPublicDriveRoute
+  '/api/public/pro-trial': typeof ApiPublicProTrialRoute
   '/oauth/google-drive/return': typeof OauthGoogleDriveReturnRoute
   '/motivation/': typeof AuthenticatedMotivationIndexRoute
   '/motivation/healing-audio/$categoryId': typeof AuthenticatedMotivationHealingAudioCategoryIdRoute
@@ -362,6 +369,7 @@ export interface FileRoutesByTo {
   '/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/api/public/drive': typeof ApiPublicDriveRoute
+  '/api/public/pro-trial': typeof ApiPublicProTrialRoute
   '/oauth/google-drive/return': typeof OauthGoogleDriveReturnRoute
   '/motivation': typeof AuthenticatedMotivationIndexRoute
   '/motivation/healing-audio/$categoryId': typeof AuthenticatedMotivationHealingAudioCategoryIdRoute
@@ -407,6 +415,7 @@ export interface FileRoutesById {
   '/_authenticated/motivation/walk': typeof AuthenticatedMotivationWalkRoute
   '/_authenticated/motivation/worry-box': typeof AuthenticatedMotivationWorryBoxRoute
   '/api/public/drive': typeof ApiPublicDriveRoute
+  '/api/public/pro-trial': typeof ApiPublicProTrialRoute
   '/oauth/google-drive/return': typeof OauthGoogleDriveReturnRoute
   '/_authenticated/motivation/': typeof AuthenticatedMotivationIndexRoute
   '/_authenticated/motivation/healing-audio/$categoryId': typeof AuthenticatedMotivationHealingAudioCategoryIdRoute
@@ -452,6 +461,7 @@ export interface FileRouteTypes {
     | '/motivation/walk'
     | '/motivation/worry-box'
     | '/api/public/drive'
+    | '/api/public/pro-trial'
     | '/oauth/google-drive/return'
     | '/motivation/'
     | '/motivation/healing-audio/$categoryId'
@@ -495,6 +505,7 @@ export interface FileRouteTypes {
     | '/motivation/walk'
     | '/motivation/worry-box'
     | '/api/public/drive'
+    | '/api/public/pro-trial'
     | '/oauth/google-drive/return'
     | '/motivation'
     | '/motivation/healing-audio/$categoryId'
@@ -539,6 +550,7 @@ export interface FileRouteTypes {
     | '/_authenticated/motivation/walk'
     | '/_authenticated/motivation/worry-box'
     | '/api/public/drive'
+    | '/api/public/pro-trial'
     | '/oauth/google-drive/return'
     | '/_authenticated/motivation/'
     | '/_authenticated/motivation/healing-audio/$categoryId'
@@ -555,6 +567,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
   ApiPublicDriveRoute: typeof ApiPublicDriveRoute
+  ApiPublicProTrialRoute: typeof ApiPublicProTrialRoute
   OauthGoogleDriveReturnRoute: typeof OauthGoogleDriveReturnRoute
   ApiPublicHooksPushSchedulerRoute: typeof ApiPublicHooksPushSchedulerRoute
 }
@@ -827,6 +840,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicDriveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/pro-trial': {
+      id: '/api/public/pro-trial'
+      path: '/api/public/pro-trial'
+      fullPath: '/api/public/pro-trial'
+      preLoaderRoute: typeof ApiPublicProTrialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/oauth/google-drive/return': {
       id: '/oauth/google-drive/return'
       path: '/oauth/google-drive/return'
@@ -945,6 +965,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
   ApiPublicDriveRoute: ApiPublicDriveRoute,
+  ApiPublicProTrialRoute: ApiPublicProTrialRoute,
   OauthGoogleDriveReturnRoute: OauthGoogleDriveReturnRoute,
   ApiPublicHooksPushSchedulerRoute: ApiPublicHooksPushSchedulerRoute,
 }
