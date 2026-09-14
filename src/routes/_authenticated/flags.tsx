@@ -300,7 +300,7 @@ function FlagsScreen() {
               role="status"
               aria-live="polite"
               style={{ zIndex: 2147483647 }}
-              className="fixed inset-0 isolate flex items-center justify-center overflow-hidden bg-background/85 p-4 backdrop-blur-md animate-fade-in dark:bg-background/90"
+              className="fixed inset-0 isolate flex items-center justify-center overflow-hidden bg-background/85 backdrop-blur-md animate-fade-in dark:bg-background/90"
               onPointerDown={(event) => event.preventDefault()}
               onTouchMove={(event) => event.preventDefault()}
             >
@@ -311,7 +311,8 @@ function FlagsScreen() {
                 playsInline
                 preload="auto"
                 onEnded={dismissSuccess}
-                className="max-h-full max-w-full object-contain"
+                className="max-h-full max-w-full bg-transparent object-contain"
+                style={{ borderRadius: 0, border: "none" }}
                 aria-hidden
               />
             </div>,
