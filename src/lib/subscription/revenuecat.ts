@@ -5,7 +5,7 @@ import { STORAGE_KEYS, storage } from "@/lib/native/storage";
 import { rcLog, rcLogError } from "@/lib/subscription/rcDebug";
 
 export const REVENUECAT_ANDROID_KEY = import.meta.env["VITE_REVENUECAT_ANDROID_KEY"] ?? "";
-export const ENTITLEMENT_ID = "pro";
+export const ENTITLEMENT_ID = "No Contact Tracker: Move On Pro";
 
 export type EntitlementState = {
   isPremium: boolean;
