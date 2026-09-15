@@ -67,9 +67,9 @@ async function grantEntitlement(
 ): Promise<GrantResult> {
   const auth = { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" };
 
-  const record = async (operation: string, res: Response) => {
+  const record = async (operation: string, res: Response): Promise<GrantResult> => {
     const text = await res.text().catch(() => "");
-    return { operation, status: res.status, reason: safeReason(text) };
+    return { ok: false, operation, status: res.status, reason: safeReason(text) };
   };
 
   const projectsRes = await fetch("https://api.revenuecat.com/v2/projects", { headers: auth });
