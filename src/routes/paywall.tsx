@@ -62,10 +62,30 @@ function weeklyEquivalent(pkg: { price: number | null; currencyCode: string }): 
   }
 }
 
+function formatEndDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function daysLeft(iso: string): number {
+  const ms = new Date(iso).getTime() - Date.now();
+  return Math.max(0, Math.ceil(ms / 86_400_000));
+}
+
 function Paywall() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { restore, busy, isPremium, offerings, reloadOfferings, purchase } = useSubscription();
+  const { restore, busy, isPremium, offerings, reloadOfferings, purchase, entitlement } =
+    useSubscription();
+  const [trialClaimed, setTrialClaimed] = useState(false);
+  const [trialExpiresAt, setTrialExpiresAt] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [diagnostics, setDiagnostics] = useState("");
