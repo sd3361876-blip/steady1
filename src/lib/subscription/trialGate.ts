@@ -22,13 +22,20 @@ export function markTrialActivated(): void {
 }
 
 /**
- * Returns true when the caller must be redirected to /start-trial.
+ * Where the launch-time gate must send the user.
+ * - "allow": active Pro (paid or running app trial), or a legacy user.
+ * - "trial": the one-time app trial is still unclaimed → /start-trial.
+ * - "paywall": the app trial is used up and there is no paid plan → /paywall.
+ */
+export type GateDecision = "allow" | "trial" | "paywall";
+
+/**
  * The gate fails CLOSED: if the access state cannot be verified (offline,
  * server error, unexpected failure) the user stays on the trial screen.
  * Verified active Pro entitlements are still let through.
  */
-export async function needsTrialActivation(pathname: string, userId: string): Promise<boolean> {
-  if (allowed || EXEMPT.has(pathname)) return false;
+export async function evaluateAccess(pathname: string, userId: string): Promise<GateDecision> {
+  if (allowed || EXEMPT.has(pathname)) return "allow";
   try {
     const { data: profile, error } = await supabase
       .from("profiles")
@@ -40,24 +47,24 @@ export async function needsTrialActivation(pathname: string, userId: string): Pr
     // Not onboarded yet, or onboarded before this feature existed.
     if (!profile?.questionnaire_completed || !profile.trial_flow_required) {
       allowed = true;
-      return false;
+      return "allow";
     }
 
     // Active Pro (paid subscription or a running trial grant) → straight in.
     const entitlement = await refreshEntitlement();
     if (entitlement.isPremium) {
       allowed = true;
-      return false;
+      return "allow";
     }
 
     const status = await fetchTrialStatus();
-    if (status.eligible) return true;
+    // Never used the app trial → activate it first.
+    if (status.eligible) return "trial";
 
-    // Claimed already (trial expired) → the existing paywall flow handles it.
-    allowed = true;
-    return false;
+    // App trial already used and no active paid plan → must choose a paid plan.
+    return "paywall";
   } catch {
     // Unverifiable state → block, never grant access by default.
-    return true;
+    return "trial";
   }
 }
