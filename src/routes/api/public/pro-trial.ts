@@ -127,20 +127,19 @@ export const Route = createFileRoute("/api/public/pro-trial")({
             });
           if (claimError) return json({ error: "You've already used your free trial." }, 409);
 
-          const grant = await fetch(
-            `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}/entitlements/${encodeURIComponent(ENTITLEMENT_ID)}/promotional`,
-            {
-              method: "POST",
-              headers: { Authorization: `Bearer ${rcSecret}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ end_time_ms: expiresAt.getTime() }),
-            },
-          );
+          const granted = await grantEntitlement(rcSecret, userId, expiresAt.getTime());
 
-          if (!grant.ok) {
+          if (!granted.ok) {
             // Release the claim so the user can retry.
             await supabaseAdmin.from("pro_trial_claims").delete().eq("user_id", userId);
-            const detail = await grant.text().catch(() => "");
-            console.error("pro-trial grant failed", grant.status, detail.slice(0, 300));
+            console.error(
+              "pro-trial grant failed",
+              JSON.stringify({
+                operation: granted.operation,
+                status: granted.status,
+                reason: granted.reason.slice(0, 300),
+              }),
+            );
             return json({ error: "We couldn't start your trial. Please try again." }, 502);
           }
 
