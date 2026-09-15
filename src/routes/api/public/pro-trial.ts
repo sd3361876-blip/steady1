@@ -59,99 +59,89 @@ function safeReason(text: string): string {
   return text.replace(/(sk_|sk-|Bearer\s+)\S+/gi, "[redacted]").slice(0, 300);
 }
 
-/**
- * Grants the existing Pro entitlement until `endAtMs`.
- *
- * The v1 promotional endpoint only accepts v1 secret keys and the entitlement
- * *identifier*; v2 keys (`sk_...` project keys) must use the v2 grant action,
- * which needs the project id and the entitlement's internal id. We resolve
- * both and try v2 first, falling back to v1, so either key type works.
- */
+/** Grants the existing Pro entitlement until `expiresAtMs` using RevenueCat v2. */
 async function grantEntitlement(
   secret: string,
   userId: string,
-  endAtMs: number,
+  expiresAtMs: number,
 ): Promise<GrantResult> {
   const auth = { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" };
-  const failures: string[] = [];
 
-  const record = async (operation: string, res: Response) => {
+  const record = async (operation: string, res: Response): Promise<GrantResult> => {
     const text = await res.text().catch(() => "");
-    failures.push(`${operation}:${res.status}:${safeReason(text)}`);
-    return { operation, status: res.status, reason: safeReason(text) };
+    return { ok: false, operation, status: res.status, reason: safeReason(text) };
   };
 
-  // --- v2 path -------------------------------------------------------------
-  let last: { operation: string; status: number; reason: string } | null = null;
   const projectsRes = await fetch("https://api.revenuecat.com/v2/projects", { headers: auth });
-  if (projectsRes.ok) {
-    const projects = (await projectsRes.json().catch(() => null)) as
-      | { items?: { id?: string }[] }
-      | null;
-    const projectId = projects?.items?.[0]?.id;
-    if (projectId) {
-      const entRes = await fetch(
-        `https://api.revenuecat.com/v2/projects/${projectId}/entitlements?limit=100`,
-        { headers: auth },
-      );
-      if (!entRes.ok) last = await record("v2_list_entitlements", entRes);
-      else {
-        const ents = (await entRes.json().catch(() => null)) as
-          | { items?: { id?: string; lookup_key?: string; display_name?: string }[] }
-          | null;
-        const match = ents?.items?.find(
-          (item) => item.lookup_key === ENTITLEMENT_ID || item.display_name === ENTITLEMENT_ID,
-        );
-        if (!match?.id) {
-          last = {
-            operation: "v2_resolve_entitlement",
-            status: 404,
-            reason: `entitlement "${ENTITLEMENT_ID}" not found among ${ents?.items?.length ?? 0} entitlements`,
-          };
-        } else {
-          const base = `https://api.revenuecat.com/v2/projects/${projectId}/customers/${encodeURIComponent(userId)}`;
-          const attempts: { operation: string; url: string; body: unknown }[] = [
-            {
-              operation: "v2_grant_entitlement",
-              url: `${base}/entitlements/actions/grant`,
-              body: { entitlement_id: match.id, end_at_ms: endAtMs },
-            },
-            {
-              operation: "v2_grant_entitlement_alt",
-              url: `${base}/entitlements/${match.id}/actions/grant_entitlement`,
-              body: { end_at_ms: endAtMs },
-            },
-          ];
-          for (const attempt of attempts) {
-            const res = await fetch(attempt.url, {
-              method: "POST",
-              headers: auth,
-              body: JSON.stringify(attempt.body),
-            });
-            if (res.ok) return { ok: true };
-            last = await record(attempt.operation, res);
-          }
-        }
-      }
-    }
-  } else {
-    last = await record("v2_list_projects", projectsRes);
+  if (!projectsRes.ok) return record("v2_list_projects", projectsRes);
+  const projects = (await projectsRes.json().catch(() => null)) as
+    | { items?: { id?: string }[] }
+    | null;
+  const projectId = projects?.items?.[0]?.id;
+  if (!projectId) {
+    return { ok: false, operation: "v2_resolve_project", status: 404, reason: "No project found" };
   }
 
-  // --- v1 promotional fallback --------------------------------------------
-  const v1 = await fetch(
-    `https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}/entitlements/${encodeURIComponent(ENTITLEMENT_ID)}/promotional`,
-    { method: "POST", headers: auth, body: JSON.stringify({ end_time_ms: endAtMs }) },
+  const entitlementsRes = await fetch(
+    `https://api.revenuecat.com/v2/projects/${projectId}/entitlements?limit=100`,
+    { headers: auth },
   );
-  if (v1.ok) return { ok: true };
-  last = await record("v1_promotional_grant", v1);
+  if (!entitlementsRes.ok) return record("v2_list_entitlements", entitlementsRes);
+  const entitlements = (await entitlementsRes.json().catch(() => null)) as
+    | { items?: { id?: string; lookup_key?: string; display_name?: string }[] }
+    | null;
+  const entitlement = entitlements?.items?.find(
+    (item) => item.lookup_key === ENTITLEMENT_ID || item.display_name === ENTITLEMENT_ID,
+  );
+  if (!entitlement?.id) {
+    return {
+      ok: false,
+      operation: "v2_resolve_entitlement",
+      status: 404,
+      reason: `entitlement "${ENTITLEMENT_ID}" not found among ${entitlements?.items?.length ?? 0} entitlements`,
+    };
+  }
 
-  return {
-    ok: false,
-    operation: last.operation,
-    status: last.status,
-    reason: failures.join(" | "),
-  };
+  const customerId = encodeURIComponent(userId);
+  const customersUrl = `https://api.revenuecat.com/v2/projects/${projectId}/customers`;
+  const customerUrl = `${customersUrl}/${customerId}`;
+  const customerRes = await fetch(customerUrl, { headers: auth });
+  if (customerRes.status === 404) {
+    const createRes = await fetch(customersUrl, {
+      method: "POST",
+      headers: auth,
+      body: JSON.stringify({ id: userId }),
+    });
+    if (!createRes.ok) return record("v2_create_customer", createRes);
+  } else if (!customerRes.ok) {
+    return record("v2_get_customer", customerRes);
+  }
+
+  const grantRes = await fetch(`${customerUrl}/actions/grant_entitlement`, {
+    method: "POST",
+    headers: auth,
+    body: JSON.stringify({ entitlement_id: entitlement.id, expires_at: expiresAtMs }),
+  });
+  if (!grantRes.ok) return record("v2_grant_entitlement", grantRes);
+
+  const verifyRes = await fetch(customerUrl, { headers: auth });
+  if (!verifyRes.ok) return record("v2_verify_entitlement", verifyRes);
+  const customer = (await verifyRes.json().catch(() => null)) as
+    | { active_entitlements?: { items?: { id?: string; entitlement_id?: string }[] } }
+    | null;
+  const verified = customer?.active_entitlements?.items?.some(
+    (item) => item.entitlement_id === entitlement.id || item.id === entitlement.id,
+  );
+  if (!verified) {
+    return {
+      ok: false,
+      operation: "v2_verify_entitlement",
+      status: 502,
+      reason: "Granted entitlement was not present in the active customer state",
+    };
+  }
+
+  return { ok: true };
 }
 
 export const Route = createFileRoute("/api/public/pro-trial")({
