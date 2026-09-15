@@ -124,12 +124,12 @@ async function grantEntitlement(
   });
   if (!grantRes.ok) return record("v2_grant_entitlement", grantRes);
 
-  const verifyRes = await fetch(`${customerUrl}/active_entitlements`, { headers: auth });
+  const verifyRes = await fetch(customerUrl, { headers: auth });
   if (!verifyRes.ok) return record("v2_verify_entitlement", verifyRes);
-  const activeEntitlements = (await verifyRes.json().catch(() => null)) as
-    | { items?: { id?: string; entitlement_id?: string }[] }
+  const customer = (await verifyRes.json().catch(() => null)) as
+    | { active_entitlements?: { items?: { id?: string; entitlement_id?: string }[] } }
     | null;
-  const verified = activeEntitlements?.items?.some(
+  const verified = customer?.active_entitlements?.items?.some(
     (item) => item.entitlement_id === entitlement.id || item.id === entitlement.id,
   );
   if (!verified) {
