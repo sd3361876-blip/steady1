@@ -333,10 +333,10 @@ function Paywall() {
           }}
         >
           {busy ? <Loader2 className="size-5 animate-spin" aria-hidden /> : null}
-          {isPremium
+          {isPremium && !appTrialActive
             ? t("paywall.alreadyPremium", "Pro is active")
             : selected
-              ? selected.trialPeriod
+              ? selected.trialPeriod && !trialClaimed
                 ? `Start ${selected.trialPeriod} free trial`
                 : `Continue — ${selected.priceString}`
               : "Continue"}
