@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS trial_flow_required boolean NOT NULL DEFAULT false;
