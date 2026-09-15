@@ -98,6 +98,25 @@ function Paywall() {
 
   useEffect(() => analytics.screen("paywall"), []);
 
+  // The app's own 30-day trial is one-time: once claimed we never show free-trial
+  // messaging again, so users are always pointed at a paid plan afterwards.
+  useEffect(() => {
+    let cancelled = false;
+    void fetchTrialStatus()
+      .then((status) => {
+        if (cancelled) return;
+        setTrialClaimed(status.claimed);
+        setTrialExpiresAt(status.expiresAt);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const trialEndsAt = entitlement?.expiresAt ?? trialExpiresAt;
+  const appTrialActive = trialClaimed && isPremium && !entitlement?.willRenew;
+
   const packages = offerings.status === "ok" ? offerings.packages : [];
 
   useEffect(() => {
