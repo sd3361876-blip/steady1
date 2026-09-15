@@ -25,6 +25,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { analytics } from "@/lib/analytics";
 import { haptic } from "@/lib/native/haptics";
 import { activateTrial, fetchTrialStatus } from "@/lib/subscription/trial";
+import { markTrialActivated } from "@/lib/subscription/trialGate";
 
 export const Route = createFileRoute("/_authenticated/start-trial")({
   ssr: false,
@@ -67,6 +68,7 @@ function StartTrial() {
   useEffect(() => {
     let cancelled = false;
     const skip = () => {
+      markTrialActivated();
       if (!cancelled) void navigate({ to: "/home", replace: true });
     };
     if (isPremium) {
@@ -93,6 +95,7 @@ function StartTrial() {
       await activateTrial();
       haptic.success();
       await refresh();
+      markTrialActivated();
       toast.success("Your 30-day Pro trial has started!");
       void navigate({ to: "/home", replace: true });
     } catch (error) {

@@ -788,6 +788,7 @@ export type Database = {
           questionnaire_completed: boolean
           recovery_started_at: string
           timezone: string | null
+          trial_flow_required: boolean
           updated_at: string
         }
         Insert: {
@@ -806,6 +807,7 @@ export type Database = {
           questionnaire_completed?: boolean
           recovery_started_at?: string
           timezone?: string | null
+          trial_flow_required?: boolean
           updated_at?: string
         }
         Update: {
@@ -824,6 +826,7 @@ export type Database = {
           questionnaire_completed?: boolean
           recovery_started_at?: string
           timezone?: string | null
+          trial_flow_required?: boolean
           updated_at?: string
         }
         Relationships: []
