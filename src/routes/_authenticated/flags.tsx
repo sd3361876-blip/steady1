@@ -297,7 +297,7 @@ function FlagsScreen() {
           )}
         </section>
       </div>
-      {showSuccess && typeof document !== "undefined"
+      {SHOW_RED_FLAG_SUCCESS_ANIMATION && showSuccess && typeof document !== "undefined"
         ? createPortal(
             <div
               role="status"
