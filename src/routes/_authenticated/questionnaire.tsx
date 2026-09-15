@@ -179,6 +179,8 @@ function Questionnaire() {
       });
       const profile = await profileRepo.update(userId, {
         questionnaire_completed: true,
+        // Marks this user as onboarded under the mandatory free-trial flow.
+        trial_flow_required: true,
         display_name: nickname,
         notifications_enabled: Boolean(answers.wants_reminders),
       });

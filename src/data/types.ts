@@ -8,6 +8,8 @@ export type Profile = {
   notification_prefs: Record<string, boolean>;
   push_token: string | null;
   questionnaire_completed: boolean;
+  /** True for users who onboarded under the mandatory free-trial flow. */
+  trial_flow_required?: boolean;
   is_premium: boolean;
 };
 

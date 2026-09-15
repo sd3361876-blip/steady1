@@ -3,10 +3,11 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { GuidedExerciseBar } from "@/components/GuidedExerciseBar";
 import { waitForOAuthSession } from "@/lib/auth/oauthHash";
 import { getCachedSession } from "@/lib/auth/session";
+import { needsTrialActivation } from "@/lib/subscription/trialGate";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     // If we landed here straight from an OAuth redirect, let supabase-js finish
     // parsing the URL fragment (and clean it up) before checking the session.
     await waitForOAuthSession();
@@ -14,6 +15,11 @@ export const Route = createFileRoute("/_authenticated")({
     // getUser() would fail in airplane mode and bounce signed-in users to /auth.
     const session = await getCachedSession();
     if (!session?.user) throw redirect({ to: "/auth" });
+    // Every launch re-evaluates trial access from the server, so closing and
+    // reopening the app can never bypass the mandatory trial screen.
+    if (await needsTrialActivation(location.pathname, session.user.id)) {
+      throw redirect({ to: "/start-trial", replace: true });
+    }
     return { user: session.user };
   },
   component: () => (
