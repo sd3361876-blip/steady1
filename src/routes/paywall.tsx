@@ -158,15 +158,46 @@ function Paywall() {
       </span>
 
       <h1 className="mt-4 text-3xl leading-tight font-semibold tracking-tight text-gradient">
-        {t("paywall.title", "30 Days Free. Your Best Chance to Reset.")}
+        {appTrialActive
+          ? "30-Day Pro Trial Active"
+          : trialClaimed
+            ? "Choose Your Pro Plan"
+            : t("paywall.title", "30 Days Free. Your Best Chance to Reset.")}
       </h1>
       <p className="mt-3 text-muted-foreground">
-        {t("paywall.subtitle", "Get full access to all the tools.")}
+        {appTrialActive
+          ? "You're enjoying full Pro access on your free trial. Pick a plan whenever you're ready to continue."
+          : trialClaimed
+            ? "Your free trial has ended. Choose a plan to keep your Pro tools."
+            : t("paywall.subtitle", "Get full access to all the tools.")}
       </p>
 
+      {appTrialActive ? (
+        <SoftCard className="mt-6 space-y-1 animate-rise">
+          <div className="flex items-center gap-3">
+            <span className="flex size-9 items-center justify-center rounded-full bg-primary/15">
+              <Crown className="size-4 text-primary" aria-hidden />
+            </span>
+            <h2 className="text-base font-semibold">30-Day Pro Trial Active</h2>
+          </div>
+          {trialEndsAt ? (
+            <>
+              <p className="pt-1 text-sm font-semibold tabular-nums">
+                You have {daysLeft(trialEndsAt)} {daysLeft(trialEndsAt) === 1 ? "day" : "days"} left
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Your trial ends on {formatEndDate(trialEndsAt)}
+              </p>
+            </>
+          ) : null}
+        </SoftCard>
+      ) : null}
+
       <SoftCard className="mt-6 space-y-4 animate-rise">
-        {BENEFIT_KEYS.map(({ key, fallback }, index) => {
-          const Icon = BENEFIT_ICONS[index]!;
+        {BENEFIT_KEYS.filter(
+          ({ key }) => !trialClaimed || (key !== "trial" && key !== "billing"),
+        ).map(({ key, fallback }) => {
+          const Icon = BENEFIT_ICONS[BENEFIT_KEYS.findIndex((b) => b.key === key)]!;
           return (
             <div key={key} className="flex items-center gap-3">
               <span className="flex size-9 items-center justify-center rounded-full bg-primary/15">
@@ -178,7 +209,7 @@ function Paywall() {
         })}
       </SoftCard>
 
-      <FreeTrialCard />
+      {trialClaimed ? null : <FreeTrialCard />}
 
       <div className="mt-6 space-y-3">
         {offerings.status === "loading" ? (
