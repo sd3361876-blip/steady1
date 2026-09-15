@@ -83,7 +83,10 @@ function StartTrial() {
         if (!status.eligible) skip();
         else setChecking(false);
       })
-      .catch(skip);
+      // Fail closed: if eligibility can't be verified, keep the user here.
+      .catch(() => {
+        if (!cancelled) setChecking(false);
+      });
     return () => {
       cancelled = true;
     };

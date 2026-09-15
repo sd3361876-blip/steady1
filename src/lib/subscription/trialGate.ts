@@ -23,17 +23,19 @@ export function markTrialActivated(): void {
 
 /**
  * Returns true when the caller must be redirected to /start-trial.
- * Any failure (offline, server error) allows access — the gate must never
- * lock a signed-in user out of their own app.
+ * The gate fails CLOSED: if the access state cannot be verified (offline,
+ * server error, unexpected failure) the user stays on the trial screen.
+ * Verified active Pro entitlements are still let through.
  */
 export async function needsTrialActivation(pathname: string, userId: string): Promise<boolean> {
   if (allowed || EXEMPT.has(pathname)) return false;
   try {
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from("profiles")
       .select("questionnaire_completed, trial_flow_required")
       .eq("id", userId)
       .maybeSingle();
+    if (error) throw error;
 
     // Not onboarded yet, or onboarded before this feature existed.
     if (!profile?.questionnaire_completed || !profile.trial_flow_required) {
@@ -55,6 +57,7 @@ export async function needsTrialActivation(pathname: string, userId: string): Pr
     allowed = true;
     return false;
   } catch {
-    return false;
+    // Unverifiable state → block, never grant access by default.
+    return true;
   }
 }
