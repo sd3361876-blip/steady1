@@ -29,6 +29,9 @@ import { FLAG_CATEGORIES, FLAG_SUGGESTIONS } from "@/lib/content";
 import { haptic } from "@/lib/native/haptics";
 import { cn } from "@/lib/utils";
 
+/** Toggle the full-screen Red Flag success animation/video on save. */
+const SHOW_RED_FLAG_SUCCESS_ANIMATION = false;
+
 /** Sensible default category for each predefined flag. */
 const SUGGESTION_CATEGORY: Record<string, string> = {
   "Lied to me": "dishonesty",
