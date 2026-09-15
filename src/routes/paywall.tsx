@@ -245,7 +245,7 @@ function Paywall() {
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
                     <span className="font-semibold">{pkg.title}</span>
-                    {pkg.trial ? (
+                    {pkg.trial && !trialClaimed ? (
                       <span className="rounded-full bg-mint px-2 py-0.5 text-[0.65rem] font-semibold text-on-tint uppercase">
                         {pkg.trial}
                       </span>
