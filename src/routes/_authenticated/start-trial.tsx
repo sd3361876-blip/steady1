@@ -68,6 +68,7 @@ function StartTrial() {
   useEffect(() => {
     let cancelled = false;
     const skip = () => {
+      markTrialActivated();
       if (!cancelled) void navigate({ to: "/home", replace: true });
     };
     if (isPremium) {
@@ -94,6 +95,7 @@ function StartTrial() {
       await activateTrial();
       haptic.success();
       await refresh();
+      markTrialActivated();
       toast.success("Your 30-day Pro trial has started!");
       void navigate({ to: "/home", replace: true });
     } catch (error) {
