@@ -22,6 +22,7 @@ import { analytics } from "@/lib/analytics";
 import { haptic } from "@/lib/native/haptics";
 import { PRIVACY_URL, TERMS_URL, openExternalUrl } from "@/lib/openExternal";
 import { rcLogsText, subscribeRcLogs } from "@/lib/subscription/rcDebug";
+import { fetchTrialStatus } from "@/lib/subscription/trial";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/paywall")({
