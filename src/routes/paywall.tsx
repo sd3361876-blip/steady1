@@ -325,7 +325,7 @@ function Paywall() {
       <div className="mt-auto pt-8">
         <Button
           className="press h-14 w-full rounded-2xl text-base"
-          disabled={busy || isPremium || !selected}
+          disabled={busy || (isPremium && !appTrialActive) || !selected}
           onClick={() => {
             if (!selected) return;
             haptic.light();
