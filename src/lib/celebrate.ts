@@ -1,3 +1,4 @@
+import { isLoggingOut } from "@/lib/logoutGuard";
 import { haptic } from "@/lib/native/haptics";
 
 /**
