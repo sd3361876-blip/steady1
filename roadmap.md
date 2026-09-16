@@ -1,4 +1,4 @@
-- [ ] Bundle and validate ten banner images
-- [ ] Add reusable banner component
-- [ ] Add exact banners to ten requested pages
+- [x] Bundle and validate ten banner images
+- [x] Add reusable banner component
+- [x] Add exact banners to ten requested pages
 - [ ] Verify rendering and validation
