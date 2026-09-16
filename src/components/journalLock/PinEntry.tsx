@@ -18,11 +18,11 @@ export function PinEntry({
   footer,
 }: {
   title: string;
-  description?: string;
-  error?: string;
-  busy?: boolean;
+  description?: string | undefined;
+  error?: string | undefined;
+  busy?: boolean | undefined;
   /** Change this to clear the entered digits (e.g. after a wrong PIN). */
-  resetKey?: string | number;
+  resetKey?: string | number | undefined;
   onSubmit: (pin: string) => void | Promise<void>;
   footer?: ReactNode;
 }) {
