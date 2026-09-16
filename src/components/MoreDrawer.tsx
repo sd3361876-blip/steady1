@@ -106,6 +106,10 @@ export function MoreDrawer({
 
   const logOut = async () => {
     haptic.light();
+    // Suppress badge/celebration side effects for the whole sign-out flow:
+    // clearing the caches otherwise makes the badge engine re-announce unlocks.
+    beginLogout();
+    cancelCelebration();
     try {
       await queryClient.cancelQueries();
       queryClient.clear();
