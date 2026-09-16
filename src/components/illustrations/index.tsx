@@ -282,3 +282,31 @@ export function LettersIllustration({ className }: { className?: string }) {
     </Canvas>
   );
 }
+
+/** Milestone — a heart-topped flag planted on a summit under a rising sun. */
+export function MilestoneIllustration({ className }: { className?: string }) {
+  return (
+    <Canvas className={className}>
+      {/* rising sun + haze */}
+      <circle cx="126" cy="28" r="12" className={YELLOW} />
+      <path d="M106 36a20 20 0 0 1 40 0Z" className={YELLOW} opacity="0.4" />
+      {/* back mountain */}
+      <path d="M6 78 44 34l38 44H6Z" className={LAVENDER} opacity="0.6" />
+      {/* front mountain */}
+      <path d="M38 78 78 24l40 54H38Z" className={GREEN} />
+      {/* snow cap */}
+      <path d="M78 24l12 16a12 12 0 0 1-24 0l12-16Z" className={CREAM} />
+      {/* flag pole on the peak */}
+      <rect x="76.5" y="6" width="3" height="17" rx="1.5" className={INK} />
+      {/* flag */}
+      <path d="M79.5 7h20c-3 3.5-3 7.5 0 11h-20V7Z" className={CORAL} />
+      {/* heart on the slope */}
+      <Heart x={62} y={62} s={0.5} className={CORAL} />
+      {/* sparkles */}
+      <Sparkle x={30} y={22} r={7} className={CORAL} />
+      <Sparkle x={140} y={62} r={6} className={LAVENDER} />
+      <circle cx="20" cy="52" r="3" className={YELLOW} />
+      <circle cx="130" cy="74" r="2.6" className={GREEN} />
+    </Canvas>
+  );
+}

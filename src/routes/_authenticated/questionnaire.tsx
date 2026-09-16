@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { CommitmentCanvas } from "@/components/CommitmentCanvas";
+import { MilestoneIllustration } from "@/components/illustrations";
 import { SoftCard } from "@/components/SoftCard";
 import { DateTimeField } from "@/components/DateTimeField";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
       { title: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
         name: "description",
-        content: "Twelve quick questions so your no-contact plan fits your breakup.",
+        content: "Thirteen quick questions so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
@@ -58,7 +59,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 12;
+const STEPS = 13;
 
 function Choice({
   options,
@@ -121,6 +122,15 @@ function Questionnaire() {
   }, [userId, navigate, redo]);
 
   const set = (patch: Answers) => setAnswers((current) => ({ ...current, ...patch }));
+
+  // 30-day milestone: signup date + 30 days, shown on the prediction screen.
+  const milestoneDate = useMemo(() => {
+    const created = user?.created_at ? new Date(user.created_at) : null;
+    const base = created && !Number.isNaN(created.getTime()) ? created : new Date();
+    const target = new Date(base);
+    target.setDate(target.getDate() + 30);
+    return target.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+  }, [user?.created_at]);
 
   const advance = (patch?: Answers) => {
     // Step 0 (name) is required — reject empty and whitespace-only input.
@@ -480,7 +490,35 @@ function Questionnaire() {
           ),
         };
       }
-      case 10:
+      case 10: {
+        // "Goal Achievement / Personalized Prediction" — shown after the
+        // commitment step, using the saved name, goal and signup date.
+        const name = (answers.nickname ?? "").trim();
+        const goal = (answers.biggest_goal ?? "").trim();
+        return {
+          title: t("questionnaire.milestone.title", { name: name || "Friend" }),
+          hint: t("questionnaire.milestone.encouragement"),
+          body: (
+            <div className="space-y-5">
+              <MilestoneIllustration className="mx-auto h-28 w-48" />
+              <SoftCard className="bg-sky text-center">
+                <p className="text-base leading-snug font-semibold text-on-tint">
+                  {t("questionnaire.milestone.milestoneLine", { date: milestoneDate })}
+                </p>
+              </SoftCard>
+              {goal ? (
+                <SoftCard>
+                  <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    {t("questionnaire.step9.workingToward")}
+                  </p>
+                  <p className="mt-2 text-base leading-snug">{goal}</p>
+                </SoftCard>
+              ) : null}
+            </div>
+          ),
+        };
+      }
+      case 11:
         return {
           title: t("questionnaire.step10.title"),
           hint: t("questionnaire.step10.hint"),
@@ -518,7 +556,7 @@ function Questionnaire() {
           ),
         };
     }
-  }, [step, answers, reasons, t, nameError, contactError]);
+  }, [step, answers, reasons, t, nameError, contactError, milestoneDate]);
 
   const canContinue = (() => {
     switch (step) {
@@ -542,7 +580,7 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 10:
+      case 11:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
