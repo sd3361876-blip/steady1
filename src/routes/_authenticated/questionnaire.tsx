@@ -826,33 +826,38 @@ function Questionnaire() {
 
   if (step === 15) {
     return (
-      // Full-screen paywall: the 9:16 artwork IS the screen, edge to edge.
-      // No progress bar and no card/panel — the CTA floats over the graphic.
-      <div className="relative h-dvh w-full overflow-hidden bg-white">
-        <img
-          src={trialOfferArtwork.url}
-          alt="Start your 7-day free Steady trial with daily emotional support, no-contact tools, a personalized healing journey, and progress tracking"
-          className="absolute inset-0 h-full w-full object-cover object-top"
-          loading="eager"
-          decoding="async"
-        />
+      // Full-screen paywall: the 9:16 artwork IS the screen. No progress bar,
+      // no card. The stage keeps the exact 9:16 composition (never cropped or
+      // stretched) and is centered — full width on phones, a centered portrait
+      // viewport on desktop.
+      <div className="flex h-dvh w-full items-center justify-center overflow-hidden bg-white">
+        <div className="relative aspect-[9/16] max-h-dvh w-full max-w-[calc(100dvh*9/16)]">
+          <img
+            src={trialOfferArtwork.url}
+            alt="Start your 7-day free Steady trial with daily emotional support, no-contact tools, a personalized healing journey, and progress tracking"
+            className="absolute inset-0 h-full w-full object-contain"
+            loading="eager"
+            decoding="async"
+          />
 
-        <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-[calc(env(safe-area-inset-bottom)+1.75rem)]">
-          <Button
-            className="press h-14 w-full rounded-full text-base font-semibold shadow-xl"
-            disabled={saving}
-            onClick={() => {
-              haptic.light();
-              advance();
-            }}
-          >
-            {saving ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : null}
-            {t("questionnaire.trialOffer.cta")}
-          </Button>
+          <div className="absolute inset-x-0 bottom-[5%] z-10 px-[8%]">
+            <Button
+              className="press h-14 w-full rounded-full text-base font-semibold shadow-xl"
+              disabled={saving}
+              onClick={() => {
+                haptic.light();
+                advance();
+              }}
+            >
+              {saving ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : null}
+              {t("questionnaire.trialOffer.cta")}
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
+
 
 
   return (
