@@ -94,37 +94,87 @@ const baseDiagnostic = (step: string): JournalLockDiagnostic => ({
 
 export const journalLockStore = {
   async get(key: string): Promise<string | null> {
+    const native = isNative();
+    recordDiagnostic(baseDiagnostic(native ? "native SecureStorage.getItem — starting" : "web localStorage.getItem — starting"));
     try {
-      if (isNative()) {
+      let result: string | null;
+      if (native) {
         const store = await nativeStore();
-        return await store.getItem(nativeKey(key));
+        recordDiagnostic(baseDiagnostic("awaiting native SecureStorage.getItem"));
+        result = await store.getItem(nativeKey(key));
+      } else {
+        if (typeof window === "undefined") result = null;
+        else result = window.localStorage.getItem(PREFIX + key);
       }
-      if (typeof window === "undefined") return null;
-      return window.localStorage.getItem(PREFIX + key);
+      recordDiagnostic({
+        ...baseDiagnostic("read complete"),
+        phase: "success",
+      });
+      return result;
     } catch (error) {
+      const described = describeJournalLockError(error);
+      recordDiagnostic({
+        ...baseDiagnostic("read threw"),
+        phase: "failed",
+        errorName: described.name,
+        errorMessage: described.message,
+        errorStack: described.stack,
+      });
       console.warn("[journal-lock] read failed", error);
       return null;
     }
   },
   async set(key: string, value: string): Promise<void> {
-    if (isNative()) {
-      const store = await nativeStore();
-      await store.setItem(nativeKey(key), value);
-      return;
+    const native = isNative();
+    recordDiagnostic(baseDiagnostic(native ? "native SecureStorage.setItem — starting" : "web localStorage.setItem — starting"));
+    try {
+      if (native) {
+        const store = await nativeStore();
+        recordDiagnostic(baseDiagnostic("awaiting native SecureStorage.setItem"));
+        await store.setItem(nativeKey(key), value);
+      } else {
+        if (typeof window !== "undefined") window.localStorage.setItem(PREFIX + key, value);
+      }
+      recordDiagnostic({
+        ...baseDiagnostic("write complete"),
+        phase: "success",
+      });
+    } catch (error) {
+      const described = describeJournalLockError(error);
+      recordDiagnostic({
+        ...baseDiagnostic("write threw"),
+        phase: "failed",
+        errorName: described.name,
+        errorMessage: described.message,
+        errorStack: described.stack,
+      });
+      throw error;
     }
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(PREFIX + key, value);
   },
   async remove(key: string): Promise<void> {
+    const native = isNative();
+    recordDiagnostic(baseDiagnostic(native ? "native SecureStorage.removeItem — starting" : "web localStorage.removeItem — starting"));
     try {
-      if (isNative()) {
+      if (native) {
         const store = await nativeStore();
+        recordDiagnostic(baseDiagnostic("awaiting native SecureStorage.removeItem"));
         await store.removeItem(nativeKey(key));
-        return;
+      } else {
+        if (typeof window !== "undefined") window.localStorage.removeItem(PREFIX + key);
       }
-      if (typeof window === "undefined") return;
-      window.localStorage.removeItem(PREFIX + key);
+      recordDiagnostic({
+        ...baseDiagnostic("remove complete"),
+        phase: "success",
+      });
     } catch (error) {
+      const described = describeJournalLockError(error);
+      recordDiagnostic({
+        ...baseDiagnostic("remove threw"),
+        phase: "failed",
+        errorName: described.name,
+        errorMessage: described.message,
+        errorStack: described.stack,
+      });
       console.warn("[journal-lock] remove failed", error);
     }
   },
