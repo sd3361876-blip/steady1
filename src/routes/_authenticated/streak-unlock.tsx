@@ -13,6 +13,7 @@ import { celebrate } from "@/lib/celebrate";
 import { downloadColoringPage } from "@/lib/coloringPage";
 import { haptic } from "@/lib/native/haptics";
 import {
+  STREAK_UNLOCK_ENABLED,
   STREAK_UNLOCK_TARGET,
   peekAppStreak,
   registerAppStreakVisit,
@@ -97,7 +98,10 @@ function StreakUnlockScreen() {
   }, []);
 
   useEffect(() => {
-    if (resolved && !eligible) void navigate({ to: "/home", replace: true });
+    // Disabled feature: anyone landing here (old link, bookmark) goes to Home.
+    if (!STREAK_UNLOCK_ENABLED || (resolved && !eligible)) {
+      void navigate({ to: "/home", replace: true });
+    }
   }, [resolved, eligible, navigate]);
 
   // Record today's usage exactly once, only when the screen actually shows.
