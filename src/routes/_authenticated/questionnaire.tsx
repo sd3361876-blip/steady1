@@ -151,6 +151,29 @@ function Questionnaire() {
     setStep((current) => Math.min(STEPS - 1, current + 1));
   };
 
+  // Step 10 ("Biggest Goal + Commitment"): saves the goal, the commitment and
+  // the optional doodle through the normal onboarding persistence, then moves on.
+  const commitGoal = async () => {
+    const goal = (answers.biggest_goal ?? "").trim();
+    if (!goal) return;
+    const patch: Answers = {
+      biggest_goal: goal,
+      commitment_completed: true,
+      commitment_drawing: answers.commitment_drawing ?? null,
+    };
+    set(patch);
+    haptic.success();
+    if (userId) {
+      try {
+        await questionnaireRepo.save(userId, patch);
+      } catch (error) {
+        // Answers are cached locally and sync later — never block onboarding.
+        analytics.error(error, { stage: "questionnaire_commitment" });
+      }
+    }
+    setStep((current) => Math.min(STEPS - 1, current + 1));
+  };
+
   const finish = async () => {
     if (!userId) return;
     setSaving(true);
