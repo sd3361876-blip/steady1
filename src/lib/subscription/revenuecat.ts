@@ -109,6 +109,7 @@ export async function configureRevenueCat(appUserId?: string): Promise<void> {
 }
 
 export async function identifyUser(appUserId: string, email?: string): Promise<void> {
+  await setEntitlementUser(appUserId);
   if (!isNative()) return;
   await safeNative(async () => {
     await configureRevenueCat(appUserId);
@@ -126,6 +127,7 @@ export async function logOutRevenueCat(): Promise<void> {
     await Purchases.logOut();
   });
   await cacheEntitlement(DEFAULT_STATE);
+  await setEntitlementUser(null);
 }
 
 function toState(info: { entitlements: { active: Record<string, unknown> } }): EntitlementState {
@@ -140,12 +142,19 @@ function toState(info: { entitlements: { active: Record<string, unknown> } }): E
   };
 }
 
-/** Refreshes entitlement from RevenueCat; falls back to cache on any failure. */
-export async function refreshEntitlement(): Promise<EntitlementState> {
+/**
+ * Refreshes entitlement from RevenueCat; falls back to cache on any failure.
+ * `invalidate` drops the native SDK's CustomerInfo cache first, which is
+ * required after a server-side grant (the SDK is not notified about it).
+ */
+export async function refreshEntitlement(
+  options: { invalidate?: boolean } = {},
+): Promise<EntitlementState> {
   if (!isNative()) return getCachedEntitlement();
   try {
     await configureRevenueCat();
     const { Purchases } = await rc();
+    if (options.invalidate) await Purchases.invalidateCustomerInfoCache();
     const { customerInfo } = await Purchases.getCustomerInfo();
     return cacheEntitlement(toState(customerInfo));
   } catch (error) {
