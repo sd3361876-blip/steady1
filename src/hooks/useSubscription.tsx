@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
+import { useAuth } from "@/hooks/useAuth";
 import { analytics } from "@/lib/analytics";
 import { haptic } from "@/lib/native/haptics";
 import { isNative } from "@/lib/native/platform";
@@ -48,6 +49,8 @@ const SubscriptionContext = createContext<SubscriptionValue>({
 });
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
   const [entitlement, setEntitlement] = useState<EntitlementState | null>(null);
   const [busy, setBusy] = useState(false);
   const [offerings, setOfferings] = useState<OfferingsState>({ status: "loading" });
