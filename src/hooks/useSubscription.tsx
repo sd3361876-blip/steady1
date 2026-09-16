@@ -161,7 +161,8 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refresh = useCallback(async () => {
-    setEntitlement(await refreshEntitlement());
+    // Called after a server-side grant, so the native cache must be dropped.
+    setEntitlement(await refreshEntitlement({ invalidate: true }));
   }, []);
 
   const restore = useCallback(async () => {
