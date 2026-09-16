@@ -45,6 +45,7 @@ export function toastOnce(id: string, message: string, variant: Variant = "defau
 
 /** Runs a side effect (confetti, haptics, native notification) at most once. */
 export function onceWithin(id: string, run: () => void): void {
+  if (isLoggingOut()) return;
   if (!allow(`fx:${id}`)) return;
   run();
 }
