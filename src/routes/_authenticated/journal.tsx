@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { lazy, Suspense, useEffect } from "react";
 
 import { ActivityListScreen } from "@/components/ActivityListScreen";
+import { JournalLockGate } from "@/components/journalLock/JournalLockGate";
 import { journalRepo } from "@/data/repository";
 import journalBanner from "@/assets/journal-banner.jpg";
 
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/journal")({
       void importSuccessAnimation().catch(() => {});
     }, []);
     return (
+      <JournalLockGate>
       <ActivityListScreen
         title={t("journal.title")}
         subtitle={t("journal.subtitle")}
