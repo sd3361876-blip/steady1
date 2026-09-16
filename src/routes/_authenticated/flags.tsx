@@ -72,6 +72,7 @@ function FlagsScreen() {
   const [note, setNote] = useState("");
   const [category, setCategory] = useState<string>(FLAG_CATEGORIES[0]?.key ?? "other");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successVideoPlaying, setSuccessVideoPlaying] = useState(false);
   const [pendingSuggestion, setPendingSuggestion] = useState<string | null>(null);
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -101,6 +102,7 @@ function FlagsScreen() {
   const dismissSuccess = () => {
     if (successTimer.current) clearTimeout(successTimer.current);
     successTimer.current = null;
+    setSuccessVideoPlaying(false);
     setShowSuccess(false);
   };
 
@@ -120,6 +122,7 @@ function FlagsScreen() {
       });
     },
     onSuccess: (rows) => {
+      setSuccessVideoPlaying(false);
       setShowSuccess(true);
       if (successTimer.current) clearTimeout(successTimer.current);
       successTimer.current = setTimeout(dismissSuccess, 8000);
@@ -320,8 +323,12 @@ function FlagsScreen() {
                 preload="auto"
                 disablePictureInPicture
                 disableRemotePlayback
+                onPlaying={() => setSuccessVideoPlaying(true)}
                 onEnded={dismissSuccess}
-                className="pointer-events-none max-h-full max-w-full bg-transparent object-contain"
+                className={cn(
+                  "pointer-events-none max-h-full max-w-full bg-transparent object-contain",
+                  successVideoPlaying ? "visible" : "invisible",
+                )}
                 style={{ borderRadius: 0, border: "none" }}
                 aria-hidden
               />
