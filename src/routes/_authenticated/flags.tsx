@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-import redFlagSuccessVideo from "@/assets/red-flag-success.mp4";
+import redFlagSuccessVideo from "@/assets/red-flag-success.webm";
 import redFlagsBanner from "@/assets/page-banners/redflag.jpg";
 import { AppShell } from "@/components/AppShell";
 import { PageImageBanner } from "@/components/PageImageBanner";
@@ -29,9 +29,6 @@ import { analytics, humanizeError } from "@/lib/analytics";
 import { FLAG_CATEGORIES, FLAG_SUGGESTIONS } from "@/lib/content";
 import { haptic } from "@/lib/native/haptics";
 import { cn } from "@/lib/utils";
-
-/** Toggle the full-screen Red Flag success animation/video on save. */
-const SHOW_RED_FLAG_SUCCESS_ANIMATION = false;
 
 /** Sensible default category for each predefined flag. */
 const SUGGESTION_CATEGORY: Record<string, string> = {
@@ -75,6 +72,7 @@ function FlagsScreen() {
   const [note, setNote] = useState("");
   const [category, setCategory] = useState<string>(FLAG_CATEGORIES[0]?.key ?? "other");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [pendingSuggestion, setPendingSuggestion] = useState<string | null>(null);
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -125,14 +123,17 @@ function FlagsScreen() {
       setShowSuccess(true);
       if (successTimer.current) clearTimeout(successTimer.current);
       successTimer.current = setTimeout(dismissSuccess, 8000);
-      activity.featureUsed("flags");
-      queryClient.setQueryData(["flags", userId], rows);
-      haptic.success();
       setTitle("");
       setNote("");
       setOpen(false);
+      window.setTimeout(() => {
+        queryClient.setQueryData(["flags", userId], rows);
+        activity.featureUsed("flags");
+        haptic.success();
+      }, 0);
     },
     onError: (error) => toast.error(humanizeError(error)),
+    onSettled: () => setPendingSuggestion(null),
   });
 
   const remove = useMutation({
@@ -219,6 +220,7 @@ function FlagsScreen() {
           </div>
           {FLAG_SUGGESTIONS.map((suggestion) => {
             const done = loggedTitles.has(suggestion.toLowerCase());
+            const isSaving = pendingSuggestion === suggestion;
             return (
               <button
                 key={suggestion}
@@ -226,26 +228,27 @@ function FlagsScreen() {
                 disabled={done || add.isPending}
                 aria-label={done ? t("flags.alreadyAdded", { suggestion }) : t("flags.addFlagNamed", { suggestion })}
                 className="press w-full text-left disabled:cursor-default"
-                onClick={() =>
+                onClick={() => {
+                  setPendingSuggestion(suggestion);
                   add.mutate({
                     title: suggestion,
                     note: null,
                     category: SUGGESTION_CATEGORY[suggestion] ?? "other",
-                  })
-                }
+                  });
+                }}
               >
                 <SoftCard
                   className={cn(
                     "flex items-center gap-3 transition-opacity",
-                    done && "bg-coral opacity-70",
+                    (done || isSaving) && "bg-coral opacity-70",
                   )}
                 >
-                  {done ? (
+                  {done || isSaving ? (
                     <Check className="size-4 shrink-0 text-on-tint" aria-hidden />
                   ) : (
                     <Circle className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                   )}
-                  <p className={cn("text-sm", done && "text-on-tint")}>{suggestion}</p>
+                  <p className={cn("text-sm", (done || isSaving) && "text-on-tint")}>{suggestion}</p>
                 </SoftCard>
               </button>
             );
@@ -298,13 +301,13 @@ function FlagsScreen() {
           )}
         </section>
       </div>
-      {SHOW_RED_FLAG_SUCCESS_ANIMATION && showSuccess && typeof document !== "undefined"
+      {showSuccess && typeof document !== "undefined"
         ? createPortal(
             <div
               role="status"
               aria-live="polite"
               style={{ zIndex: 2147483647 }}
-              className="fixed inset-0 isolate flex items-center justify-center overflow-hidden bg-background/85 backdrop-blur-md animate-fade-in dark:bg-background/90"
+              className="fixed inset-0 isolate flex touch-none items-center justify-center overflow-hidden bg-background/85 animate-fade-in dark:bg-background/90"
               onPointerDown={(event) => event.preventDefault()}
               onTouchMove={(event) => event.preventDefault()}
             >
@@ -313,9 +316,12 @@ function FlagsScreen() {
                 autoPlay
                 muted
                 playsInline
+                controls={false}
                 preload="auto"
+                disablePictureInPicture
+                disableRemotePlayback
                 onEnded={dismissSuccess}
-                className="max-h-full max-w-full bg-transparent object-contain"
+                className="pointer-events-none max-h-full max-w-full bg-transparent object-contain"
                 style={{ borderRadius: 0, border: "none" }}
                 aria-hidden
               />
