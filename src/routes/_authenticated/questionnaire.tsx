@@ -678,7 +678,7 @@ function Questionnaire() {
           ),
         };
     }
-  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage]);
+  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage, reviewing]);
 
   const canContinue = (() => {
     switch (step) {
@@ -702,7 +702,7 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 12:
+      case 13:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
@@ -731,7 +731,7 @@ function Questionnaire() {
         <div className="mt-8">{content.body}</div>
       </div>
 
-      {step !== 11 ? <div className="mt-8 flex items-center gap-3">
+      {step !== 11 && step !== 12 ? <div className="mt-8 flex items-center gap-3">
         {step > 0 ? (
           <Button
             variant="ghost"
