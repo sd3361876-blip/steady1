@@ -293,6 +293,16 @@ export const screensEn = {
       cta: "Rate Steady",
       later: "Maybe later",
     },
+    privacy: {
+      title: "Your healing is private.",
+      hint: "Steady is built to give you a private space to work through your journey.",
+      privateTitle: "Private",
+      privateBody: "Your personal reflections stay private.",
+      noAdsTitle: "No annoying ads",
+      noAdsBody: "Your healing experience isn't interrupted by distracting ads.",
+      dataTitle: "Your data",
+      dataBody: "Your personal information is handled according to Steady's privacy practices.",
+    },
     step10: {
       title: "Want gentle reminders?",
       hint: "A morning nudge and an evening check-in. No spam, ever.",

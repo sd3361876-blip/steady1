@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, LoaderCircle, Star } from "lucide-react";
+import { Ban, Check, LoaderCircle, Lock, ShieldCheck, Star } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
       { title: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
         name: "description",
-        content: "Fourteen quick steps so your no-contact plan fits your breakup.",
+        content: "Fifteen quick steps so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
@@ -61,7 +61,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 15;
+const STEPS = 16;
 
 function Choice({
   options,
@@ -640,7 +640,50 @@ function Questionnaire() {
             </div>
           ),
         };
-      case 13:
+      case 13: {
+        // "PRIVACY / NO-ADS / TRUST" — informational, Continue advances.
+        const points = [
+          {
+            icon: <Lock className="size-5" aria-hidden />,
+            title: t("questionnaire.privacy.privateTitle"),
+            body: t("questionnaire.privacy.privateBody"),
+          },
+          {
+            icon: <Ban className="size-5" aria-hidden />,
+            title: t("questionnaire.privacy.noAdsTitle"),
+            body: t("questionnaire.privacy.noAdsBody"),
+          },
+          {
+            icon: <ShieldCheck className="size-5" aria-hidden />,
+            title: t("questionnaire.privacy.dataTitle"),
+            body: t("questionnaire.privacy.dataBody"),
+          },
+        ];
+        return {
+          title: t("questionnaire.privacy.title"),
+          hint: t("questionnaire.privacy.hint"),
+          body: (
+            <div className="space-y-3">
+              {points.map((point) => (
+                <SoftCard key={point.title}>
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-sky text-on-tint">
+                      {point.icon}
+                    </span>
+                    <div>
+                      <p className="font-semibold">{point.title}</p>
+                      <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
+                        {point.body}
+                      </p>
+                    </div>
+                  </div>
+                </SoftCard>
+              ))}
+            </div>
+          ),
+        };
+      }
+      case 14:
         return {
           title: t("questionnaire.step10.title"),
           hint: t("questionnaire.step10.hint"),
@@ -702,7 +745,7 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 13:
+      case 14:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
