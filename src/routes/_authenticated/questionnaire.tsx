@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, LoaderCircle, Star } from "lucide-react";
+import { Ban, Check, LoaderCircle, Lock, ShieldCheck, Star } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
