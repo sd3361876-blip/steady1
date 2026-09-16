@@ -52,7 +52,8 @@ export const Route = createFileRoute("/_authenticated/journal")({
             <SuccessLottieAnimation onComplete={onComplete} />
           </Suspense>
         )}
-      />
+        />
+      </JournalLockGate>
     );
   },
 });
