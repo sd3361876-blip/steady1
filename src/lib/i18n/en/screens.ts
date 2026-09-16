@@ -274,6 +274,11 @@ export const screensEn = {
       clearDrawing: "Clear drawing",
       commitCta: "I commit to myself",
     },
+    milestone: {
+      title: "{{name}}, you're ready to move forward.",
+      milestoneLine: "Your first Steady milestone is {{date}}.",
+      encouragement: "You have more potential than you may feel right now.",
+    },
     step10: {
       title: "Want gentle reminders?",
       hint: "A morning nudge and an evening check-in. No spam, ever.",
