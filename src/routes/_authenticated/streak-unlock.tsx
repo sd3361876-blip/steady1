@@ -87,6 +87,7 @@ function StreakUnlockScreen() {
   const onboarded = profile.data?.questionnaire_completed !== false;
   // Last contact must be recent, and the screen shows once per calendar day.
   const eligible =
+    STREAK_UNLOCK_ENABLED &&
     resolved &&
     peek.data!.eligible &&
     (!auto || (onboarded && !peek.data!.seenToday));
