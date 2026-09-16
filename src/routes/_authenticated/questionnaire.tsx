@@ -3,15 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
   Ban,
-  Brain,
-  ChartNoAxesColumnIncreasing,
   Check,
-  Heart,
   LoaderCircle,
   Lock,
   ShieldCheck,
-  SmartphoneOff,
-  Sprout,
   Star,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -20,7 +15,6 @@ import { useTranslation } from "react-i18next";
 
 import { CommitmentCanvas } from "@/components/CommitmentCanvas";
 import { MilestoneIllustration } from "@/components/illustrations";
-import { Mascot } from "@/components/Mascot";
 import { SoftCard } from "@/components/SoftCard";
 import { DateTimeField } from "@/components/DateTimeField";
 import { Button } from "@/components/ui/button";
@@ -39,6 +33,7 @@ import { requestAppReview } from "@/lib/native/inAppReview";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
+import trialOfferArtwork from "@/assets/onboarding/steady-7-day-trial.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/questionnaire")({
   validateSearch: (search: Record<string, unknown>): { redo?: boolean } =>
@@ -830,71 +825,21 @@ function Questionnaire() {
   })();
 
   if (step === 17) {
-    const benefits = [
-      { icon: Brain, label: t("questionnaire.trialOffer.emotionalSupport"), tone: "bg-coral" },
-      { icon: SmartphoneOff, label: t("questionnaire.trialOffer.urgeControl"), tone: "bg-sky" },
-      { icon: Sprout, label: t("questionnaire.trialOffer.healingJourney"), tone: "bg-mint" },
-      {
-        icon: ChartNoAxesColumnIncreasing,
-        label: t("questionnaire.trialOffer.trackProgress"),
-        tone: "bg-lavender",
-      },
-    ] as const;
-
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background px-5 pt-[calc(env(safe-area-inset-top)+1rem)] pb-[calc(env(safe-area-inset-bottom)+6.5rem)]">
-        <div className="flex items-center gap-3" aria-label={`${step + 1} of ${STEPS}`}>
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-            <div className="h-full w-full rounded-full bg-primary" />
-          </div>
-          <span className="text-xs font-medium text-muted-foreground">{step + 1}/{STEPS}</span>
-        </div>
-
-        <main className="animate-step-in flex flex-1 flex-col items-center text-center">
-          <div className="mt-3 flex items-center gap-1.5 text-primary">
-            <Sprout className="size-6" strokeWidth={2.5} aria-hidden />
-            <span className="text-xl font-bold text-foreground">{t("questionnaire.trialOffer.brand")}</span>
-          </div>
-          <p className="mt-0.5 text-xs font-medium text-muted-foreground">
-            {t("questionnaire.trialOffer.tagline")}
-          </p>
-
-          <h1 className="mt-5 text-[2rem] leading-[1.08] font-bold text-foreground">
-            {t("questionnaire.trialOffer.titleStart")}
-            <br />
-            <span className="text-primary">{t("questionnaire.trialOffer.titleFree")}</span>{" "}
-            {t("questionnaire.trialOffer.titleEnd")}
-          </h1>
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-            {t("questionnaire.trialOffer.subtitle")}
-          </p>
-
-          <div className="relative mt-3 flex h-48 w-full items-center justify-center">
-            <Heart className="absolute top-9 right-[14%] size-6 fill-current text-destructive/70" aria-hidden />
-            <Heart className="absolute bottom-8 left-[13%] size-5 fill-current text-destructive/60" aria-hidden />
-            <span className="absolute top-14 left-[12%] h-1 w-8 rotate-[32deg] rounded-full bg-primary/70" aria-hidden />
-            <span className="absolute top-16 right-[10%] h-1 w-8 -rotate-[32deg] rounded-full bg-primary/70" aria-hidden />
-            <Mascot size="hero" className="size-48" alt="Steady tortoise mascot" />
-          </div>
-
-          <h2 className="mt-1 text-base font-bold text-foreground">
-            {t("questionnaire.trialOffer.supportTitle")}
-          </h2>
-          <div className="mt-4 grid w-full grid-cols-4 gap-2">
-            {benefits.map(({ icon: Icon, label, tone }) => (
-              <div key={label} className="flex min-w-0 flex-col items-center">
-                <span className={cn("flex size-12 items-center justify-center rounded-full", tone)}>
-                  <Icon className="size-6 text-on-tint" strokeWidth={2.2} aria-hidden />
-                </span>
-                <p className="mt-2 text-[0.65rem] leading-tight font-medium text-foreground">{label}</p>
-              </div>
-            ))}
-          </div>
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+5rem)]">
+        <main className="animate-step-in flex min-h-0 flex-1 items-start justify-center overflow-hidden">
+          <img
+            src={trialOfferArtwork.url}
+            alt="Start your 7-day free Steady trial with daily emotional support, no-contact tools, a personalized healing journey, and progress tracking"
+            className="h-full max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-5rem)] w-full object-contain object-top"
+            loading="eager"
+            decoding="async"
+          />
         </main>
 
-        <div className="surface-blur fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-md px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+        <div className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-md bg-background px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
           <Button
-            className="press h-13 w-full rounded-xl text-sm font-semibold shadow-lg"
+            className="press h-12 w-full rounded-xl text-sm font-semibold shadow-lg"
             disabled={saving}
             onClick={() => void finish()}
           >
