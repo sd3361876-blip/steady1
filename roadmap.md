@@ -1,3 +1,4 @@
-- [x] Make Red Flag option taps respond immediately without blocking the page
-- [x] Add the uploaded transparent Red Flag success animation
-- [x] Verify the focused Red Flags behavior and bundled video
+- [ ] Reorganize the hamburger menu into direct items and two expandable groups
+- [ ] Reuse the existing Journal Lock setting in the hamburger menu
+- [ ] Add a non-unlocking back button to the Journal Locked screen
+- [ ] Verify the drawer and locked Journal behavior
