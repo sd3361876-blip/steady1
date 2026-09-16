@@ -869,6 +869,8 @@ export type Database = {
           age_range: string | null
           biggest_goal: string | null
           checks_social: string | null
+          commitment_completed: boolean
+          commitment_drawing: string | null
           completed: boolean
           created_at: string
           difficulty_today: number | null
@@ -888,6 +890,8 @@ export type Database = {
           age_range?: string | null
           biggest_goal?: string | null
           checks_social?: string | null
+          commitment_completed?: boolean
+          commitment_drawing?: string | null
           completed?: boolean
           created_at?: string
           difficulty_today?: number | null
@@ -907,6 +911,8 @@ export type Database = {
           age_range?: string | null
           biggest_goal?: string | null
           checks_social?: string | null
+          commitment_completed?: boolean
+          commitment_drawing?: string | null
           completed?: boolean
           created_at?: string
           difficulty_today?: number | null
