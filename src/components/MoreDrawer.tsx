@@ -112,6 +112,8 @@ export function MoreDrawer({
     // clearing the caches otherwise makes the badge engine re-announce unlocks.
     beginLogout();
     cancelCelebration();
+    // Drop any badge toast that is still on screen.
+    toast.dismiss();
     try {
       await queryClient.cancelQueries();
       queryClient.clear();
