@@ -1,0 +1,67 @@
+import { useEffect, useState, type ReactNode } from "react";
+
+import { JournalUnlockPanel } from "@/components/journalLock/JournalUnlockPanel";
+import { SoftCard } from "@/components/SoftCard";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  clearJournalUnlocked,
+  ensureBackgroundWatcher,
+  isJournalUnlocked,
+  loadJournalLockConfig,
+  type JournalLockConfig,
+} from "@/lib/journalLock/state";
+
+/**
+ * Shows the Journal Lock screen in place of the journal until the user
+ * authenticates. Only the journal is gated — the rest of STEADY is untouched.
+ * The unlocked session lives in memory and ends when this screen unmounts
+ * (leaving the journal) or after the app has been backgrounded too long.
+ */
+export function JournalLockGate({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const userId = user?.id ?? "";
+  const [config, setConfig] = useState<JournalLockConfig | null>(null);
+  const [unlocked, setUnlocked] = useState(false);
+
+  useEffect(() => {
+    ensureBackgroundWatcher();
+    let alive = true;
+    setConfig(null);
+    void loadJournalLockConfig(userId).then((next) => {
+      if (!alive) return;
+      setConfig(next);
+      setUnlocked(!next.enabled || isJournalUnlocked(userId));
+    });
+    return () => {
+      alive = false;
+      // Leaving the journal ends the unlocked session.
+      clearJournalUnlocked();
+    };
+  }, [userId]);
+
+  // Re-lock if the app came back from a long background while mounted.
+  useEffect(() => {
+    if (!config?.enabled || !unlocked) return;
+    const onVisible = () => {
+      if (document.visibilityState === "visible" && !isJournalUnlocked(userId)) setUnlocked(false);
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [config?.enabled, unlocked, userId]);
+
+  if (!config) return null;
+  if (!config.enabled || unlocked) return <>{children}</>;
+
+  return (
+    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-10">
+      <SoftCard className="space-y-4">
+        <JournalUnlockPanel
+          userId={userId}
+          config={config}
+          onConfigChange={setConfig}
+          onUnlocked={() => setUnlocked(true)}
+        />
+      </SoftCard>
+    </div>
+  );
+}
