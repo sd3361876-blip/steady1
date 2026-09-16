@@ -44,7 +44,7 @@ export const journalLockStore = {
   async set(key: string, value: string): Promise<void> {
     if (isNative()) {
       const store = await nativeStore();
-      await store.setItem(key, value);
+      await store.setItem(nativeKey(key), value);
       return;
     }
     if (typeof window === "undefined") return;
