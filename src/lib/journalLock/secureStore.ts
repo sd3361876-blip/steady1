@@ -58,7 +58,7 @@ export function subscribeJournalLockDiagnostics(
 export function describeJournalLockError(error: unknown): {
   name: string;
   message: string;
-  stack?: string;
+  stack?: string | undefined;
 } {
   if (error instanceof Error) {
     return { name: error.name, message: error.message, stack: error.stack };
