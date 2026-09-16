@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
       { title: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
         name: "description",
-        content: "Fourteen quick steps so your no-contact plan fits your breakup.",
+        content: "Fifteen quick steps so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
@@ -61,7 +61,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 15;
+const STEPS = 16;
 
 function Choice({
   options,
