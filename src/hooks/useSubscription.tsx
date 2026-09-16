@@ -11,6 +11,7 @@ import {
   purchasePackageById,
   refreshEntitlement,
   restorePurchases,
+  setEntitlementUser,
   type EntitlementState,
   type OfferingPackage,
 } from "@/lib/subscription/revenuecat";
@@ -51,10 +52,23 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [offerings, setOfferings] = useState<OfferingsState>({ status: "loading" });
 
+  // Entitlement state is per Supabase user: switching accounts drops the
+  // previous user's state before anything is read for the new one.
   useEffect(() => {
-    void getCachedEntitlement().then(setEntitlement);
-    void refreshEntitlement().then(setEntitlement);
-  }, []);
+    let cancelled = false;
+    setEntitlement(null);
+    void (async () => {
+      await setEntitlementUser(userId ?? null);
+      if (cancelled || !userId) return;
+      const cached = await getCachedEntitlement();
+      if (!cancelled) setEntitlement(cached);
+      const fresh = await refreshEntitlement();
+      if (!cancelled) setEntitlement(fresh);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const reloadOfferings = useCallback(async () => {
     setOfferings({ status: "loading" });
