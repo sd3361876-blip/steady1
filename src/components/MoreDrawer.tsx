@@ -48,6 +48,8 @@ import { haptic } from "@/lib/native/haptics";
 import { shareApp } from "@/lib/share";
 import { PRIVACY_URL, TERMS_URL, openExternalUrl } from "@/lib/openExternal";
 import { SUPPORT_EMAIL, copySupportEmail, openFeedbackEmail } from "@/lib/feedback";
+import { toast } from "sonner";
+
 import { toastOnce } from "@/lib/toastOnce";
 import { cn } from "@/lib/utils";
 
