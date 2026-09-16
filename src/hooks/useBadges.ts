@@ -134,7 +134,7 @@ export function useBadges(options: { autoUnlock?: boolean } = {}): BadgeState {
 
   const announced = useRef(false);
   useEffect(() => {
-    if (!autoUnlock || !enabled || unlockInFlight) return;
+    if (!autoUnlock || !enabled || unlockInFlight || isLoggingOut()) return;
     const keys = earnedBadgeKeys(stats);
     const fresh = keys.filter(
       (key) => !owned.has(key) && !announcedKeys.has(`${userId}:${key}`),
