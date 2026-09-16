@@ -248,6 +248,8 @@ export const questionnaireRepo = {
       checks_social: null,
       difficulty_today: null,
       biggest_goal: null,
+      commitment_completed: false,
+      commitment_drawing: null,
       wants_reminders: null,
       referral_source: null,
       completed: false,

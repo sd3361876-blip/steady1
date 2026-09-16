@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+import { CommitmentCanvas } from "@/components/CommitmentCanvas";
 import { SoftCard } from "@/components/SoftCard";
 import { DateTimeField } from "@/components/DateTimeField";
 import { Button } from "@/components/ui/button";
@@ -147,6 +148,29 @@ function Questionnaire() {
     }
     if (patch) set(patch);
     haptic.light();
+    setStep((current) => Math.min(STEPS - 1, current + 1));
+  };
+
+  // Step 10 ("Biggest Goal + Commitment"): saves the goal, the commitment and
+  // the optional doodle through the normal onboarding persistence, then moves on.
+  const commitGoal = async () => {
+    const goal = (answers.biggest_goal ?? "").trim();
+    if (!goal) return;
+    const patch: Answers = {
+      biggest_goal: goal,
+      commitment_completed: true,
+      commitment_drawing: answers.commitment_drawing ?? null,
+    };
+    set(patch);
+    haptic.success();
+    if (userId) {
+      try {
+        await questionnaireRepo.save(userId, patch);
+      } catch (error) {
+        // Answers are cached locally and sync later — never block onboarding.
+        analytics.error(error, { stage: "questionnaire_commitment" });
+      }
+    }
     setStep((current) => Math.min(STEPS - 1, current + 1));
   };
 
@@ -416,20 +440,46 @@ function Questionnaire() {
             </div>
           ),
         };
-      case 9:
+      case 9: {
+        const goal = (answers.biggest_goal ?? "").trim();
         return {
           title: t("questionnaire.step9.title"),
           hint: t("questionnaire.step9.hint"),
           body: (
-            <Textarea
-              maxLength={280}
-              value={answers.biggest_goal ?? ""}
-              onChange={(event) => set({ biggest_goal: event.target.value })}
-              placeholder={t("questionnaire.step9.placeholder")}
-              className="min-h-32 rounded-3xl"
-            />
+            <div className="space-y-5">
+              <Textarea
+                maxLength={280}
+                value={answers.biggest_goal ?? ""}
+                onChange={(event) => set({ biggest_goal: event.target.value })}
+                placeholder={t("questionnaire.step9.placeholder")}
+                className="min-h-32 rounded-3xl"
+              />
+              {goal ? (
+                <div className="animate-step-in space-y-5">
+                  <SoftCard className="bg-sky">
+                    <p className="text-xs font-medium tracking-wide text-on-tint/80 uppercase">
+                      {t("questionnaire.step9.workingToward")}
+                    </p>
+                    <p className="mt-2 text-base leading-snug text-on-tint">{goal}</p>
+                  </SoftCard>
+                  <div className="space-y-2">
+                    <p className="text-base font-semibold">
+                      {t("questionnaire.step9.commitPrompt")}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("questionnaire.step9.commitHint")}
+                    </p>
+                    <CommitmentCanvas
+                      clearLabel={t("questionnaire.step9.clearDrawing")}
+                      onChange={(dataUrl) => set({ commitment_drawing: dataUrl })}
+                    />
+                  </div>
+                </div>
+              ) : null}
+            </div>
           ),
         };
+      }
       case 10:
         return {
           title: t("questionnaire.step10.title"),
@@ -490,6 +540,8 @@ function Questionnaire() {
         );
       case 7:
         return Boolean(answers.checks_social);
+      case 9:
+        return Boolean((answers.biggest_goal ?? "").trim());
       case 10:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
@@ -532,9 +584,17 @@ function Questionnaire() {
         <Button
           className="press h-13 flex-1 rounded-2xl text-base"
           disabled={saving || !canContinue}
-          onClick={() => (step === STEPS - 1 ? void finish() : advance())}
+          onClick={() => {
+            if (step === STEPS - 1) return void finish();
+            if (step === 9) return void commitGoal();
+            advance();
+          }}
         >
-          {step === STEPS - 1 ? t("questionnaire.start") : t("questionnaire.continue")}
+          {step === STEPS - 1
+            ? t("questionnaire.start")
+            : step === 9
+              ? t("questionnaire.step9.commitCta")
+              : t("questionnaire.continue")}
         </Button>
       </div>
     </div>

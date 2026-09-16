@@ -35,6 +35,10 @@ export type QuestionnaireAnswers = {
   checks_social: string | null;
   difficulty_today: number | null;
   biggest_goal: string | null;
+  /** True once the person tapped "I commit to myself" on the goal step. */
+  commitment_completed?: boolean;
+  /** Optional commitment doodle stored as a PNG data URL. */
+  commitment_drawing?: string | null;
   wants_reminders: boolean | null;
   referral_source: string | null;
   completed: boolean;

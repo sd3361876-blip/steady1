@@ -265,9 +265,14 @@ export const screensEn = {
       hint: "1 is calm, 10 is unbearable.",
     },
     step9: {
-      title: "What's your biggest goal?",
-      hint: "We'll bring this back on the hard days.",
+      title: "What do you want to achieve with Steady?",
+      hint: "Tell us what you want to feel, change, or stop doing.",
       placeholder: "Stop checking their profile and feel like myself again.",
+      workingToward: "This is what I'm working toward.",
+      commitPrompt: "Ready to commit? Draw a happy face!",
+      commitHint: "Totally optional — any doodle counts.",
+      clearDrawing: "Clear drawing",
+      commitCta: "I commit to myself",
     },
     step10: {
       title: "Want gentle reminders?",
