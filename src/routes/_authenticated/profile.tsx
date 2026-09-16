@@ -322,7 +322,6 @@ function SettingsScreen() {
     })();
   };
 
-
   const saveProfile = async () => {
     haptic.light();
     await update.mutateAsync({

@@ -67,7 +67,10 @@ export function PinEntry({
       </div>
 
       <p
-        className={cn("min-h-5 text-center text-sm", error ? "text-destructive" : "text-muted-foreground")}
+        className={cn(
+          "min-h-5 text-center text-sm",
+          error ? "text-destructive" : "text-muted-foreground",
+        )}
         role={error ? "alert" : undefined}
       >
         {error ?? ""}
