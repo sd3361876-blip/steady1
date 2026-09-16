@@ -691,20 +691,25 @@ function Questionnaire() {
                 ))}
               </div>
               <div className="space-y-3">
+                {reviewDone ? null : (
+                  <Button
+                    className="press h-13 w-full rounded-2xl text-base"
+                    disabled={reviewing}
+                    onClick={() => void rateAndContinue()}
+                  >
+                    {reviewing ? (
+                      <LoaderCircle className="size-5 animate-spin" aria-hidden />
+                    ) : null}
+                    {t("questionnaire.rate.cta")}
+                  </Button>
+                )}
                 <Button
+                  variant={reviewDone ? "default" : "ghost"}
                   className="press h-13 w-full rounded-2xl text-base"
-                  disabled={reviewing}
-                  onClick={() => void rateAndContinue()}
-                >
-                  {t("questionnaire.rate.cta")}
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="press h-13 w-full rounded-2xl"
                   disabled={reviewing}
                   onClick={() => advance()}
                 >
-                  {t("questionnaire.rate.later")}
+                  {reviewDone ? t("questionnaire.continue") : t("questionnaire.rate.later")}
                 </Button>
               </div>
             </div>
