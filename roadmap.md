@@ -1,3 +1,3 @@
-- [ ] Remove old illustrations from the nine pages that rendered them
-- [ ] Confirm Daily Guided Exercise has no old illustration
-- [ ] Validate the focused change
+- [x] Remove old illustrations from the nine pages that rendered them
+- [x] Confirm Daily Guided Exercise has no old illustration
+- [x] Validate the focused change
