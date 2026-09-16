@@ -61,7 +61,14 @@ export async function evaluateAccess(pathname: string, userId: string): Promise<
     // Never used the app trial → activate it first.
     if (status.eligible) return "trial";
 
-    // App trial already used and no active paid plan → must choose a paid plan.
+    // Claimed trial still inside its server-recorded window → full access, even
+    // if the store's cached customer state hasn't caught up with the grant yet.
+    if (status.claimed && status.expiresAt && new Date(status.expiresAt).getTime() > Date.now()) {
+      allowed = true;
+      return "allow";
+    }
+
+    // App trial expired and no active paid plan → must choose a paid plan.
     return "paywall";
   } catch {
     // Unverifiable state → block, never grant access by default.

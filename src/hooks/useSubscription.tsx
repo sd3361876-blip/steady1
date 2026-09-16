@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
+import { useAuth } from "@/hooks/useAuth";
 import { analytics } from "@/lib/analytics";
 import { haptic } from "@/lib/native/haptics";
 import { isNative } from "@/lib/native/platform";
@@ -11,6 +12,7 @@ import {
   purchasePackageById,
   refreshEntitlement,
   restorePurchases,
+  setEntitlementUser,
   type EntitlementState,
   type OfferingPackage,
 } from "@/lib/subscription/revenuecat";
@@ -47,14 +49,29 @@ const SubscriptionContext = createContext<SubscriptionValue>({
 });
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
   const [entitlement, setEntitlement] = useState<EntitlementState | null>(null);
   const [busy, setBusy] = useState(false);
   const [offerings, setOfferings] = useState<OfferingsState>({ status: "loading" });
 
+  // Entitlement state is per Supabase user: switching accounts drops the
+  // previous user's state before anything is read for the new one.
   useEffect(() => {
-    void getCachedEntitlement().then(setEntitlement);
-    void refreshEntitlement().then(setEntitlement);
-  }, []);
+    let cancelled = false;
+    setEntitlement(null);
+    void (async () => {
+      await setEntitlementUser(userId ?? null);
+      if (cancelled || !userId) return;
+      const cached = await getCachedEntitlement();
+      if (!cancelled) setEntitlement(cached);
+      const fresh = await refreshEntitlement();
+      if (!cancelled) setEntitlement(fresh);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   const reloadOfferings = useCallback(async () => {
     setOfferings({ status: "loading" });
@@ -144,7 +161,8 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refresh = useCallback(async () => {
-    setEntitlement(await refreshEntitlement());
+    // Called after a server-side grant, so the native cache must be dropped.
+    setEntitlement(await refreshEntitlement({ invalidate: true }));
   }, []);
 
   const restore = useCallback(async () => {

@@ -100,7 +100,9 @@ export async function clearAllLocalData(): Promise<void> {
 
 export const STORAGE_KEYS = {
   onboarded: "nc:onboarded",
+  /** Legacy device-global entitlement cache; only ever removed now. */
   entitlement: "nc:entitlement",
+  entitlementFor: (userId: string) => `nc:entitlement:${userId}`,
   syncQueue: "nc:sync-queue",
   cache: (name: string, userId: string) => `nc:cache:${name}:${userId}`,
 } as const;
