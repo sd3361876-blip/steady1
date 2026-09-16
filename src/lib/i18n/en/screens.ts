@@ -287,6 +287,12 @@ export const screensEn = {
       journey: "Your Steady journey",
       trustedBy: "Trusted by 1,000 people",
     },
+    rate: {
+      title: "Would you rate Steady?",
+      hint: "Your feedback helps us keep improving Steady for people going through the same experience.",
+      cta: "Rate Steady",
+      later: "Maybe later",
+    },
     step10: {
       title: "Want gentle reminders?",
       hint: "A morning nudge and an evening check-in. No spam, ever.",

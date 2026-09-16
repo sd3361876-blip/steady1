@@ -21,6 +21,7 @@ import { analytics, humanizeError } from "@/lib/analytics";
 import { clampToNow, isFutureTimestamp } from "@/lib/datetime";
 import { activity } from "@/lib/badgeActivity";
 import { haptic } from "@/lib/native/haptics";
+import { requestAppReview } from "@/lib/native/inAppReview";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
@@ -60,7 +61,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 14;
+const STEPS = 15;
 
 function Choice({
   options,
@@ -104,6 +105,7 @@ function Questionnaire() {
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
   const [processingStage, setProcessingStage] = useState(0);
+  const [reviewing, setReviewing] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [contactError, setContactError] = useState<string | null>(null);
 
@@ -204,6 +206,18 @@ function Questionnaire() {
       }
     }
     setStep((current) => Math.min(STEPS - 1, current + 1));
+  };
+
+  // Rating screen: opens the Google Play in-app review sheet, then continues
+  // regardless of whether it appeared, was dismissed or a review was left.
+  const rateAndContinue = async () => {
+    setReviewing(true);
+    try {
+      await requestAppReview();
+    } finally {
+      setReviewing(false);
+      advance();
+    }
   };
 
   const finish = async () => {
@@ -594,6 +608,39 @@ function Questionnaire() {
         };
       }
       case 12:
+        // "Would you rate Steady?" — optional, never incentivised. Both
+        // buttons continue to the next onboarding screen.
+        return {
+          title: t("questionnaire.rate.title"),
+          hint: t("questionnaire.rate.hint"),
+          body: (
+            <div className="space-y-5">
+              <div className="flex items-center justify-center gap-1 text-primary">
+                {[0, 1, 2, 3, 4].map((index) => (
+                  <Star key={index} className="size-8 fill-current" aria-hidden />
+                ))}
+              </div>
+              <div className="space-y-3">
+                <Button
+                  className="press h-13 w-full rounded-2xl text-base"
+                  disabled={reviewing}
+                  onClick={() => void rateAndContinue()}
+                >
+                  {t("questionnaire.rate.cta")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="press h-13 w-full rounded-2xl"
+                  disabled={reviewing}
+                  onClick={() => advance()}
+                >
+                  {t("questionnaire.rate.later")}
+                </Button>
+              </div>
+            </div>
+          ),
+        };
+      case 13:
         return {
           title: t("questionnaire.step10.title"),
           hint: t("questionnaire.step10.hint"),
@@ -631,7 +678,7 @@ function Questionnaire() {
           ),
         };
     }
-  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage]);
+  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage, reviewing]);
 
   const canContinue = (() => {
     switch (step) {
@@ -655,7 +702,7 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 12:
+      case 13:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
@@ -684,7 +731,7 @@ function Questionnaire() {
         <div className="mt-8">{content.body}</div>
       </div>
 
-      {step !== 11 ? <div className="mt-8 flex items-center gap-3">
+      {step !== 11 && step !== 12 ? <div className="mt-8 flex items-center gap-3">
         {step > 0 ? (
           <Button
             variant="ghost"
