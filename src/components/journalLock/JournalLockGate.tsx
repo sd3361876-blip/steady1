@@ -1,4 +1,3 @@
-import { useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
@@ -21,7 +20,6 @@ import {
  * (leaving the journal) or after the app has been backgrounded too long.
  */
 export function JournalLockGate({ children }: { children: ReactNode }) {
-  const router = useRouter();
   const { user } = useAuth();
   const userId = user?.id ?? "";
   const [config, setConfig] = useState<JournalLockConfig | null>(null);
@@ -64,7 +62,7 @@ export function JournalLockGate({ children }: { children: ReactNode }) {
         size="icon"
         aria-label="Back"
         className="press absolute left-5 top-[calc(env(safe-area-inset-top)+1.5rem)] rounded-full"
-        onClick={() => router.history.back()}
+        onClick={() => window.history.back()}
       >
         <ArrowLeft className="size-5" aria-hidden />
       </Button>
