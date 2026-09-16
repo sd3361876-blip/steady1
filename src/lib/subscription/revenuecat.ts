@@ -41,13 +41,30 @@ async function rc() {
   return import("@revenuecat/purchases-capacitor");
 }
 
-/** Reads the locally cached entitlement so premium keeps working offline. */
+/**
+ * The entitlement cache is scoped to the signed-in Supabase user: a
+ * device-global cache would let a previously signed-in account's Pro state
+ * unlock the next account on the same device.
+ */
+let cacheUserId: string | null = null;
+
+/** Points the entitlement cache at a user; switching users drops the old state. */
+export async function setEntitlementUser(userId: string | null): Promise<void> {
+  if (cacheUserId === userId) return;
+  cacheUserId = userId;
+  // Purge the legacy device-global cache so it can never be read again.
+  await storage.remove(STORAGE_KEYS.entitlement);
+}
+
+/** Reads the current user's cached entitlement so premium keeps working offline. */
 export async function getCachedEntitlement(): Promise<EntitlementState> {
-  return storage.get<EntitlementState>(STORAGE_KEYS.entitlement, DEFAULT_STATE);
+  if (!cacheUserId) return DEFAULT_STATE;
+  return storage.get<EntitlementState>(STORAGE_KEYS.entitlementFor(cacheUserId), DEFAULT_STATE);
 }
 
 async function cacheEntitlement(state: EntitlementState): Promise<EntitlementState> {
-  await storage.set(STORAGE_KEYS.entitlement, state);
+  if (!cacheUserId) return state;
+  await storage.set(STORAGE_KEYS.entitlementFor(cacheUserId), state);
   return state;
 }
 
