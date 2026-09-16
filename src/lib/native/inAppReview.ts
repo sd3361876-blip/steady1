@@ -1,6 +1,6 @@
 import { InAppReview } from "@capacitor-community/in-app-review";
 
-import { openExternal } from "@/lib/openExternal";
+import { openExternalUrl } from "@/lib/openExternal";
 import { isNative, safeNative } from "@/lib/native/platform";
 
 const PLAY_URL = "https://play.google.com/store/apps/details?id=com.nocontacttracker.app";
@@ -14,7 +14,7 @@ const PLAY_URL = "https://play.google.com/store/apps/details?id=com.nocontacttra
 export async function requestAppReview(): Promise<void> {
   if (!isNative()) {
     try {
-      await openExternal(PLAY_URL);
+      await openExternalUrl(PLAY_URL);
     } catch {
       // Ignore — rating is always optional.
     }
