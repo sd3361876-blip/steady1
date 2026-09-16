@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Ban, Check, LoaderCircle, Lock, ShieldCheck, Star } from "lucide-react";
+import { ArrowRight, Ban, Check, LoaderCircle, Lock, ShieldCheck, Star } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
       { title: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
         name: "description",
-        content: "Fifteen quick steps so your no-contact plan fits your breakup.",
+        content: "Sixteen quick steps so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
@@ -61,7 +61,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 16;
+const STEPS = 17;
 
 function Choice({
   options,
@@ -683,7 +683,64 @@ function Questionnaire() {
           ),
         };
       }
-      case 14:
+      case 14: {
+        // "SOCIAL PROOF + TRANSFORMATION" — informational BEFORE → AFTER
+        // comparison, Continue advances. The 30-day timeframe mirrors the
+        // app's real first milestone (signup date + 30 days); it describes
+        // when results *can* begin, not a guaranteed outcome.
+        const beforeItems = t("questionnaire.transformation.beforeItems", {
+          returnObjects: true,
+        }) as string[];
+        const afterItems = t("questionnaire.transformation.afterItems", {
+          returnObjects: true,
+        }) as string[];
+        return {
+          title: t("questionnaire.transformation.title"),
+          hint: t("questionnaire.transformation.hint"),
+          body: (
+            <div className="space-y-5">
+              <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
+                <div className="rounded-3xl border border-border bg-card px-4 py-4">
+                  <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    {t("questionnaire.transformation.beforeTitle")}
+                  </p>
+                  <ul className="mt-3 space-y-2.5">
+                    {beforeItems.map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm leading-snug">
+                        <span aria-hidden className="mt-[0.45rem] size-1.5 shrink-0 rounded-full bg-muted-foreground/50" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <ArrowRight className="mt-6 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                <div className="rounded-3xl bg-sky px-4 py-4">
+                  <p className="text-xs font-medium tracking-wide text-on-tint/80 uppercase">
+                    {t("questionnaire.transformation.afterTitle")}
+                  </p>
+                  <ul className="mt-3 space-y-2.5">
+                    {afterItems.map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm leading-snug text-on-tint">
+                        <Check className="mt-0.5 size-3.5 shrink-0" strokeWidth={3} aria-hidden />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <SoftCard className="bg-sky text-center">
+                <p className="text-base leading-snug font-semibold text-on-tint">
+                  {t("questionnaire.transformation.resultsLine")}
+                </p>
+                <p className="mt-2 text-sm leading-snug text-on-tint/80">
+                  {t("questionnaire.transformation.workTowardLine")}
+                </p>
+              </SoftCard>
+            </div>
+          ),
+        };
+      }
+      case 15:
         return {
           title: t("questionnaire.step10.title"),
           hint: t("questionnaire.step10.hint"),
@@ -745,7 +802,7 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 14:
+      case 15:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;

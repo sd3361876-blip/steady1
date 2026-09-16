@@ -303,6 +303,26 @@ export const screensEn = {
       dataTitle: "Your data",
       dataBody: "Your personal information is handled according to Steady's privacy practices.",
     },
+    transformation: {
+      title: "See where Steady can take you.",
+      hint: "Before and after with Steady.",
+      beforeTitle: "Right now",
+      afterTitle: "With Steady",
+      beforeItems: [
+        "Feeling stuck",
+        "Thinking about them constantly",
+        "Checking their profile",
+        "Struggling with no contact",
+      ],
+      afterItems: [
+        "More emotional control",
+        "Fewer checking urges",
+        "Stronger no-contact habits",
+        "Feeling like yourself again",
+      ],
+      resultsLine: "Your first meaningful results can begin in 30 days.",
+      workTowardLine: "Here's what you can work toward with Steady.",
+    },
     step10: {
       title: "Want gentle reminders?",
       hint: "A morning nudge and an evening check-in. No spam, ever.",
