@@ -2,3 +2,5 @@
 - [x] Reuse the existing Journal Lock setting in the hamburger menu
 - [x] Add a non-unlocking back button to the Journal Locked screen
 - [x] Verify the drawer and locked Journal behavior
+- [x] Add the 7-day free-trial artwork screen after onboarding transformation
+- [x] Connect its real offer button to the existing trial/paywall flow
