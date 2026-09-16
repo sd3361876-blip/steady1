@@ -54,7 +54,7 @@ export const journalLockStore = {
     try {
       if (isNative()) {
         const store = await nativeStore();
-        await store.removeItem(key);
+        await store.removeItem(nativeKey(key));
         return;
       }
       if (typeof window === "undefined") return;
