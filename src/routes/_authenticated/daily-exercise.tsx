@@ -5,6 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { MoodCheckIn, type MoodCheckInResult } from "@/components/MoodCheckIn";
+import exerciseBanner from "@/assets/page-banners/exercise.jpg";
+import { PageImageBanner } from "@/components/PageImageBanner";
 import { SoftCard } from "@/components/SoftCard";
 import { SosToolkit } from "@/components/SosToolkit";
 import { SubScreen } from "@/components/SubScreen";
@@ -237,6 +239,7 @@ function DailyExerciseScreen() {
 
   return (
     <SubScreen title="Today's Exercise" description={session.category}>
+      <PageImageBanner src={exerciseBanner} />
       <SoftCard className="bg-mint">
         <p className="text-lg font-semibold text-on-tint">{session.title}</p>
         <p className="mt-1 flex items-center gap-1.5 text-xs text-on-tint/80">

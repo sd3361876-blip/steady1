@@ -3,6 +3,8 @@ import { lazy, Suspense, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { ActivityListScreen } from "@/components/ActivityListScreen";
+import triggersBanner from "@/assets/page-banners/trigger.jpg";
+import { PageImageBanner } from "@/components/PageImageBanner";
 import { TriggersIllustration } from "@/components/illustrations";
 import { triggerRepo } from "@/data/repository";
 
@@ -28,6 +30,7 @@ export const Route = createFileRoute("/_authenticated/triggers")({
       <ActivityListScreen
         title={t("triggers.title")}
         subtitle={t("triggers.subtitle")}
+        banner={<PageImageBanner src={triggersBanner} className="mb-0" />}
         illustration={<TriggersIllustration />}
         cacheKey="triggers"
         repo={triggerRepo}
