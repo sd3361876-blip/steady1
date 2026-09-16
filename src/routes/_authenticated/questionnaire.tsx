@@ -517,6 +517,8 @@ function Questionnaire() {
         );
       case 7:
         return Boolean(answers.checks_social);
+      case 9:
+        return Boolean((answers.biggest_goal ?? "").trim());
       case 10:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
@@ -559,9 +561,17 @@ function Questionnaire() {
         <Button
           className="press h-13 flex-1 rounded-2xl text-base"
           disabled={saving || !canContinue}
-          onClick={() => (step === STEPS - 1 ? void finish() : advance())}
+          onClick={() => {
+            if (step === STEPS - 1) return void finish();
+            if (step === 9) return void commitGoal();
+            advance();
+          }}
         >
-          {step === STEPS - 1 ? t("questionnaire.start") : t("questionnaire.continue")}
+          {step === STEPS - 1
+            ? t("questionnaire.start")
+            : step === 9
+              ? t("questionnaire.step9.commitCta")
+              : t("questionnaire.continue")}
         </Button>
       </div>
     </div>
