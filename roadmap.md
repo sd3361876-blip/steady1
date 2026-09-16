@@ -1,3 +1,3 @@
 - [x] Make Red Flag option taps respond immediately without blocking the page
 - [x] Add the uploaded transparent Red Flag success animation
-- [ ] Verify the focused Red Flags behavior and bundled video
+- [x] Verify the focused Red Flags behavior and bundled video
