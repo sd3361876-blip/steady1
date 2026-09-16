@@ -33,6 +33,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DateTimeField } from "@/components/DateTimeField";
 import { JournalLockSetting } from "@/components/journalLock/JournalLockSetting";
 import { clampToNow } from "@/lib/datetime";
+import { cancelCelebration } from "@/lib/celebrate";
+import { beginLogout, endLogout } from "@/lib/logoutGuard";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
