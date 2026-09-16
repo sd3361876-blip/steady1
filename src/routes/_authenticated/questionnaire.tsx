@@ -594,6 +594,39 @@ function Questionnaire() {
         };
       }
       case 12:
+        // "Would you rate Steady?" — optional, never incentivised. Both
+        // buttons continue to the next onboarding screen.
+        return {
+          title: t("questionnaire.rate.title"),
+          hint: t("questionnaire.rate.hint"),
+          body: (
+            <div className="space-y-5">
+              <div className="flex items-center justify-center gap-1 text-primary">
+                {[0, 1, 2, 3, 4].map((index) => (
+                  <Star key={index} className="size-8 fill-current" aria-hidden />
+                ))}
+              </div>
+              <div className="space-y-3">
+                <Button
+                  className="press h-13 w-full rounded-2xl text-base"
+                  disabled={reviewing}
+                  onClick={() => void rateAndContinue()}
+                >
+                  {t("questionnaire.rate.cta")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="press h-13 w-full rounded-2xl"
+                  disabled={reviewing}
+                  onClick={() => advance()}
+                >
+                  {t("questionnaire.rate.later")}
+                </Button>
+              </div>
+            </div>
+          ),
+        };
+      case 13:
         return {
           title: t("questionnaire.step10.title"),
           hint: t("questionnaire.step10.hint"),
