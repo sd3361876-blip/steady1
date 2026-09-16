@@ -859,7 +859,19 @@ function Questionnaire() {
           body: null,
         };
     }
-  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage, reviewing]);
+  }, [
+    step,
+    answers,
+    reasons,
+    t,
+    nameError,
+    contactError,
+    milestoneDate,
+    processingStage,
+    flowPhase,
+    reviewing,
+    reviewDone,
+  ]);
 
   const canContinue = (() => {
     switch (step) {
