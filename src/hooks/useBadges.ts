@@ -34,6 +34,7 @@ import {
   type BadgeStats,
 } from "@/lib/badges";
 import { celebrate } from "@/lib/celebrate";
+import { isLoggingOut } from "@/lib/logoutGuard";
 import { onceWithin, toastOnce } from "@/lib/toastOnce";
 import { daysSince } from "@/lib/streak";
 
