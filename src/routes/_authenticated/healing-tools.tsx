@@ -14,6 +14,7 @@ import healingBanner from "@/assets/page-banners/healing.jpg";
 import { PageImageBanner } from "@/components/PageImageBanner";
 import { HEALING_AUDIO_TAGLINE } from "@/lib/healingAudio";
 import { haptic } from "@/lib/native/haptics";
+import { STREAK_UNLOCK_ENABLED } from "@/lib/streakUnlock";
 
 export const Route = createFileRoute("/_authenticated/healing-tools")({
   head: () => ({
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/healing-tools")({
   component: HealingToolsScreen,
 });
 
-const CARDS = [
+const ALL_CARDS = [
   {
     to: "/streak-unlock",
     icon: Palette,
@@ -77,6 +78,11 @@ const CARDS = [
     tint: "bg-blush",
   },
 ] as const;
+
+// The 7-Day Streak Unlock card is hidden while the feature is disabled.
+const CARDS = ALL_CARDS.filter(
+  (card) => STREAK_UNLOCK_ENABLED || card.to !== "/streak-unlock",
+);
 
 function HealingToolsScreen() {
   return (

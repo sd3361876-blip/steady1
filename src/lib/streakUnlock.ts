@@ -15,6 +15,14 @@
 import { supabase } from "@/integrations/supabase/client";
 import { elapsedSince } from "@/lib/streak";
 
+/**
+ * Master switch for the whole 7-Day Streak Unlock feature.
+ * Set back to `true` to re-enable it everywhere (splash auto-open, the
+ * /streak-unlock screen, and the Healing Tools card). While false the feature
+ * never activates or displays; all of its code stays intact.
+ */
+export const STREAK_UNLOCK_ENABLED = false;
+
 export const STREAK_UNLOCK_TARGET = 7;
 
 /** Last contact must be within this many days for the screen to show. */
