@@ -63,7 +63,7 @@ export async function promptBiometric(options: {
     await BiometricAuth.authenticate({
       reason: options.reason,
       androidTitle: options.title,
-      androidSubtitle: options.subtitle,
+      androidSubtitle: options.subtitle ?? options.reason,
       allowDeviceCredential: options.allowDeviceCredential ?? false,
       cancelTitle: "Cancel",
       androidConfirmationRequired: false,
