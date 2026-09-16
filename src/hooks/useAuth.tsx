@@ -41,6 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(nextSession);
       setLoading(false);
       if (nextSession?.user) {
+        // A live session means we're no longer in a sign-out flow.
+        endLogout();
         setCrashUser(nextSession.user.id);
         analytics.track("login", { provider: nextSession.user.app_metadata?.provider ?? "unknown" });
         void identifyUser(nextSession.user.id, nextSession.user.email ?? undefined);
