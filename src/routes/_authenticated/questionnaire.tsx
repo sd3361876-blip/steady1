@@ -114,7 +114,11 @@ function Questionnaire() {
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
   const [processingStage, setProcessingStage] = useState(0);
+  // Step 11 runs as a short sequence in place: 0 personalized win,
+  // 1 animated setup, 2 social proof.
+  const [flowPhase, setFlowPhase] = useState(0);
   const [reviewing, setReviewing] = useState(false);
+  const [reviewDone, setReviewDone] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [contactError, setContactError] = useState<string | null>(null);
 
