@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, type R
 import { supabase } from "@/integrations/supabase/client";
 import { analytics } from "@/lib/analytics";
 import { getCachedSession } from "@/lib/auth/session";
+import { endLogout } from "@/lib/logoutGuard";
 import { clearCrashUser, setCrashUser } from "@/lib/monitoring/crashlytics";
 import { syncNotificationDeviceState } from "@/lib/notifications/deviceState";
 import { deactivatePushToken, syncPushRegistration } from "@/lib/notifications/push";
