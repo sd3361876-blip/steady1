@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { AppShell } from "@/components/AppShell";
+import lettersBanner from "@/assets/page-banners/unsent.jpg";
+import { PageImageBanner } from "@/components/PageImageBanner";
 import { LettersIllustration } from "@/components/illustrations";
 import { SoftCard } from "@/components/SoftCard";
 import { Button } from "@/components/ui/button";
@@ -130,6 +132,7 @@ function LettersScreen() {
         </Dialog>
       }
     >
+      <PageImageBanner src={lettersBanner} />
       <LettersIllustration className="mx-auto mb-5 mt-1 w-40" />
       <div className="space-y-3">
         {(letters.data ?? []).length === 0 ? (

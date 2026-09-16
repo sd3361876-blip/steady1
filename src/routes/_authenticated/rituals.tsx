@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 import { ActivityListScreen } from "@/components/ActivityListScreen";
+import ritualsBanner from "@/assets/page-banners/ritual.jpg";
+import { PageImageBanner } from "@/components/PageImageBanner";
 import { RitualsIllustration } from "@/components/illustrations";
 import { ritualRepo } from "@/data/repository";
 
@@ -20,6 +22,7 @@ export const Route = createFileRoute("/_authenticated/rituals")({
       <ActivityListScreen
         title={t("rituals.title")}
         subtitle={t("rituals.subtitle")}
+        banner={<PageImageBanner src={ritualsBanner} className="mb-0" />}
         illustration={<RitualsIllustration />}
         cacheKey="rituals"
         repo={ritualRepo}

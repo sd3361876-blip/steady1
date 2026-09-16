@@ -7,7 +7,9 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import redFlagSuccessVideo from "@/assets/red-flag-success.mp4";
+import redFlagsBanner from "@/assets/page-banners/redflag.jpg";
 import { AppShell } from "@/components/AppShell";
+import { PageImageBanner } from "@/components/PageImageBanner";
 import { SoftCard } from "@/components/SoftCard";
 import { FlagsIllustration } from "@/components/illustrations";
 import { Button } from "@/components/ui/button";
@@ -209,6 +211,7 @@ function FlagsScreen() {
         </Dialog>
       }
     >
+      <PageImageBanner src={redFlagsBanner} />
       <FlagsIllustration className="mx-auto mb-5 mt-1 w-40" />
       <div className="space-y-6">
         <section className="space-y-3">

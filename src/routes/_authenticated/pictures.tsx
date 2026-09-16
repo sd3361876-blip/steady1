@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { AppShell } from "@/components/AppShell";
+import picturesBanner from "@/assets/page-banners/picture.jpg";
+import { PageImageBanner } from "@/components/PageImageBanner";
 import { SoftCard } from "@/components/SoftCard";
 import { PicturesIllustration } from "@/components/illustrations";
 import { Button } from "@/components/ui/button";
@@ -271,6 +273,7 @@ function Pictures() {
 
   return (
     <AppShell title={t("pictures.title")} subtitle={t("pictures.subtitle")}>
+      <PageImageBanner src={picturesBanner} />
       <PicturesIllustration className="mx-auto mb-5 mt-1 w-40" />
 
       <SoftCard className="mb-4 space-y-3">
