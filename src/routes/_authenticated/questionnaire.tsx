@@ -21,6 +21,7 @@ import { analytics, humanizeError } from "@/lib/analytics";
 import { clampToNow, isFutureTimestamp } from "@/lib/datetime";
 import { activity } from "@/lib/badgeActivity";
 import { haptic } from "@/lib/native/haptics";
+import { requestAppReview } from "@/lib/native/inAppReview";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
@@ -60,7 +61,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 14;
+const STEPS = 15;
 
 function Choice({
   options,
@@ -104,6 +105,7 @@ function Questionnaire() {
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
   const [processingStage, setProcessingStage] = useState(0);
+  const [reviewing, setReviewing] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [contactError, setContactError] = useState<string | null>(null);
 
@@ -204,6 +206,18 @@ function Questionnaire() {
       }
     }
     setStep((current) => Math.min(STEPS - 1, current + 1));
+  };
+
+  // Rating screen: opens the Google Play in-app review sheet, then continues
+  // regardless of whether it appeared, was dismissed or a review was left.
+  const rateAndContinue = async () => {
+    setReviewing(true);
+    try {
+      await requestAppReview();
+    } finally {
+      setReviewing(false);
+      advance();
+    }
   };
 
   const finish = async () => {
