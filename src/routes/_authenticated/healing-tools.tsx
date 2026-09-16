@@ -11,7 +11,6 @@ import {
 
 import { AppShell } from "@/components/AppShell";
 import healingBanner from "@/assets/page-banners/healing.jpg";
-import { MotivationIllustration } from "@/components/illustrations";
 import { PageImageBanner } from "@/components/PageImageBanner";
 import { HEALING_AUDIO_TAGLINE } from "@/lib/healingAudio";
 import { haptic } from "@/lib/native/haptics";
@@ -83,7 +82,6 @@ function HealingToolsScreen() {
   return (
     <AppShell title="Healing Tools" subtitle="A little reminder to keep choosing yourself.">
       <PageImageBanner src={healingBanner} />
-      <MotivationIllustration className="mx-auto mb-5 mt-1 w-40" />
       <ul className="space-y-3">
         {CARDS.map(({ to, icon: Icon, title, tagline, tint }) => (
           <li key={to}>

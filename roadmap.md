@@ -1,4 +1,3 @@
-- [x] Bundle and validate ten banner images
-- [x] Add reusable banner component
-- [x] Add exact banners to ten requested pages
-- [x] Verify rendering and validation
+- [ ] Remove old illustrations from the nine pages that rendered them
+- [ ] Confirm Daily Guided Exercise has no old illustration
+- [ ] Validate the focused change
