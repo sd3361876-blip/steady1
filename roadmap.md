@@ -1,4 +1,4 @@
 - [x] Reorganize the hamburger menu into direct items and two expandable groups
 - [x] Reuse the existing Journal Lock setting in the hamburger menu
 - [x] Add a non-unlocking back button to the Journal Locked screen
-- [ ] Verify the drawer and locked Journal behavior
+- [x] Verify the drawer and locked Journal behavior
