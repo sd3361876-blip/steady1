@@ -36,6 +36,7 @@ type Variant = "default" | "success" | "error";
 
 /** Shows a message at most once per cooldown window, per id. */
 export function toastOnce(id: string, message: string, variant: Variant = "default"): void {
+  if (isLoggingOut() && !LOGOUT_TOAST_IDS.has(id)) return;
   if (!allow(id)) return;
   if (variant === "success") toast.success(message, { id });
   else if (variant === "error") toast.error(message, { id });
