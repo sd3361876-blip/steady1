@@ -13,6 +13,64 @@ import { isNative } from "@/lib/native/platform";
  */
 const PREFIX = "steady_journal_lock_";
 
+/* ==================================================================== *
+ * TEMPORARY DIAGNOSTICS — added only to debug the blank Android Journal.
+ * Records what the secure-storage layer is doing so the gate can render
+ * the live status on screen. No behavior change: every code path below
+ * returns/resolves exactly as before.
+ * ==================================================================== */
+
+export type JournalLockDiagnostic = {
+  phase: "pending" | "success" | "failed";
+  step: string;
+  isNative: boolean;
+  errorName?: string;
+  errorMessage?: string;
+  errorStack?: string;
+  updatedAt: string;
+};
+
+let lastDiagnostic: JournalLockDiagnostic | null = null;
+let diagnosticVersion = 0;
+const diagnosticListeners = new Set<
+  (diagnostic: JournalLockDiagnostic | null, version: number) => void
+>();
+
+function recordDiagnostic(diagnostic: JournalLockDiagnostic): void {
+  lastDiagnostic = diagnostic;
+  diagnosticVersion += 1;
+  diagnosticListeners.forEach((listener) => listener(diagnostic, diagnosticVersion));
+}
+
+export function getJournalLockDiagnostic(): JournalLockDiagnostic | null {
+  return lastDiagnostic;
+}
+
+export function subscribeJournalLockDiagnostics(
+  listener: (diagnostic: JournalLockDiagnostic | null, version: number) => void,
+): () => void {
+  diagnosticListeners.add(listener);
+  return () => {
+    diagnosticListeners.delete(listener);
+  };
+}
+
+export function describeJournalLockError(error: unknown): {
+  name: string;
+  message: string;
+  stack?: string;
+} {
+  if (error instanceof Error) {
+    return { name: error.name, message: error.message, stack: error.stack };
+  }
+  if (typeof error === "string") return { name: "StringError", message: error };
+  try {
+    return { name: "UnknownError", message: JSON.stringify(error) };
+  } catch {
+    return { name: "UnknownError", message: String(error) };
+  }
+}
+
 /**
  * NOTE: the plugin's `setKeyPrefix` is a JS-only helper that is NOT implemented
  * as a native Android method. Calling it on Android dispatches a bridge call
@@ -26,6 +84,13 @@ async function nativeStore() {
 }
 
 const nativeKey = (key: string) => PREFIX + key;
+
+const baseDiagnostic = (step: string): JournalLockDiagnostic => ({
+  phase: "pending",
+  step,
+  isNative: isNative(),
+  updatedAt: new Date().toISOString(),
+});
 
 export const journalLockStore = {
   async get(key: string): Promise<string | null> {
