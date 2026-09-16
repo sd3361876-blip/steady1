@@ -141,22 +141,23 @@ function Questionnaire() {
   useEffect(() => {
     if (step !== 11) {
       setProcessingStage(0);
+      setFlowPhase(0);
       return;
     }
+    if (flowPhase !== 1) return;
 
     const timers = [
-      window.setTimeout(() => setProcessingStage(1), 450),
-      window.setTimeout(() => setProcessingStage(2), 950),
-      window.setTimeout(() => setProcessingStage(3), 1450),
-      window.setTimeout(() => setProcessingStage(4), 2050),
+      window.setTimeout(() => setProcessingStage(1), 500),
+      window.setTimeout(() => setProcessingStage(2), 1100),
+      window.setTimeout(() => setProcessingStage(3), 1700),
       window.setTimeout(() => {
         haptic.success();
-        setStep(12);
-      }, 3400),
+        setFlowPhase(2);
+      }, 2400),
     ];
 
     return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [step]);
+  }, [step, flowPhase]);
 
   const set = (patch: Answers) => setAnswers((current) => ({ ...current, ...patch }));
 
