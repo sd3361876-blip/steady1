@@ -116,7 +116,11 @@ function Paywall() {
   }, []);
 
   const trialEndsAt = entitlement?.expiresAt ?? trialExpiresAt;
-  const appTrialActive = trialClaimed && isPremium && !entitlement?.willRenew;
+  // The server's stored expiry is authoritative for the app trial: a missing
+  // entitlement (e.g. a not-yet-refreshed store cache) must never be read as
+  // "the trial ended" while the stored end date is still in the future.
+  const trialWindowOpen = Boolean(trialExpiresAt && new Date(trialExpiresAt).getTime() > Date.now());
+  const appTrialActive = trialClaimed && (isPremium || trialWindowOpen) && !entitlement?.willRenew;
 
   const packages = offerings.status === "ok" ? offerings.packages : [];
 
