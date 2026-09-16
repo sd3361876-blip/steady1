@@ -1,5 +1,10 @@
 import { toast } from "sonner";
 
+import { isLoggingOut } from "@/lib/logoutGuard";
+
+/** The only message allowed to appear while signing out. */
+const LOGOUT_TOAST_IDS = new Set(["logged-out", "logout-error"]);
+
 /**
  * Toast de-duplication.
  *
