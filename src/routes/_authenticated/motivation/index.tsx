@@ -4,7 +4,6 @@ import { ChevronRight, Leaf } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import journeyBanner from "@/assets/page-banners/journey.jpg";
 import { GoalsRoutines } from "@/components/goals/GoalsRoutines";
-import { MotivationIllustration } from "@/components/illustrations";
 import { PageImageBanner } from "@/components/PageImageBanner";
 import { haptic } from "@/lib/native/haptics";
 
@@ -30,7 +29,6 @@ function JourneyHomeScreen() {
   return (
     <AppShell title="Journey" subtitle="Small steps to help you heal, grow, and reconnect with yourself.">
       <PageImageBanner src={journeyBanner} />
-      <MotivationIllustration className="mx-auto mb-5 mt-1 w-40" />
       <ul className="space-y-3">
         <li>
           <Link
