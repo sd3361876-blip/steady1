@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/healing-tools")({
   component: HealingToolsScreen,
 });
 
-const CARDS = [
+const ALL_CARDS = [
   {
     to: "/streak-unlock",
     icon: Palette,

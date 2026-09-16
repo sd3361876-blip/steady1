@@ -6,6 +6,7 @@ import { Mascot } from "@/components/Mascot";
 import { useAuth } from "@/hooks/useAuth";
 import { analytics } from "@/lib/analytics";
 import { TAGLINE } from "@/lib/content";
+import { STREAK_UNLOCK_ENABLED } from "@/lib/streakUnlock";
 
 export const Route = createFileRoute("/")({
   ssr: false,
@@ -39,9 +40,13 @@ function Splash() {
         void navigate({ to: "/auth", replace: true });
         return;
       }
-      // The streak screen decides for itself whether today needs celebrating;
-      // if not, it forwards straight to Home.
-      void navigate({ to: "/streak-unlock", search: { auto: true }, replace: true });
+      if (STREAK_UNLOCK_ENABLED) {
+        // The streak screen decides for itself whether today needs celebrating;
+        // if not, it forwards straight to Home.
+        void navigate({ to: "/streak-unlock", search: { auto: true }, replace: true });
+        return;
+      }
+      void navigate({ to: "/home", replace: true });
     }, 2400);
 
     return () => {
