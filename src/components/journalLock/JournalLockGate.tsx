@@ -12,6 +12,12 @@ import {
   loadJournalLockConfig,
   type JournalLockConfig,
 } from "@/lib/journalLock/state";
+import {
+  describeJournalLockError,
+  getJournalLockDiagnostic,
+  subscribeJournalLockDiagnostics,
+  type JournalLockDiagnostic,
+} from "@/lib/journalLock/secureStore";
 
 /**
  * Shows the Journal Lock screen in place of the journal until the user
