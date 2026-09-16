@@ -114,11 +114,7 @@ function Questionnaire() {
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
   const [processingStage, setProcessingStage] = useState(0);
-  // Step 11 runs as a short sequence in place: 0 personalized win,
-  // 1 animated setup, 2 social proof.
-  const [flowPhase, setFlowPhase] = useState(0);
   const [reviewing, setReviewing] = useState(false);
-  const [reviewDone, setReviewDone] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [contactError, setContactError] = useState<string | null>(null);
 
@@ -141,23 +137,22 @@ function Questionnaire() {
   useEffect(() => {
     if (step !== 11) {
       setProcessingStage(0);
-      setFlowPhase(0);
       return;
     }
-    if (flowPhase !== 1) return;
 
     const timers = [
-      window.setTimeout(() => setProcessingStage(1), 500),
-      window.setTimeout(() => setProcessingStage(2), 1100),
-      window.setTimeout(() => setProcessingStage(3), 1700),
+      window.setTimeout(() => setProcessingStage(1), 450),
+      window.setTimeout(() => setProcessingStage(2), 950),
+      window.setTimeout(() => setProcessingStage(3), 1450),
+      window.setTimeout(() => setProcessingStage(4), 2050),
       window.setTimeout(() => {
         haptic.success();
-        setFlowPhase(2);
-      }, 2400),
+        setStep(12);
+      }, 3400),
     ];
 
     return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [step, flowPhase]);
+  }, [step]);
 
   const set = (patch: Answers) => setAnswers((current) => ({ ...current, ...patch }));
 
@@ -222,16 +217,15 @@ function Questionnaire() {
     setStep((current) => Math.min(STEPS - 1, current + 1));
   };
 
-  // Review step: opens the official Google Play in-app review flow. No rating
-  // is asked for first, nobody is filtered or rewarded. Whatever happens
-  // (shown, dismissed, unavailable) the user then continues with Continue.
+  // Rating screen: opens the Google Play in-app review sheet, then continues
+  // regardless of whether it appeared, was dismissed or a review was left.
   const rateAndContinue = async () => {
     setReviewing(true);
     try {
       await requestAppReview();
     } finally {
       setReviewing(false);
-      setReviewDone(true);
+      advance();
     }
   };
 
@@ -570,55 +564,17 @@ function Questionnaire() {
         };
       }
       case 11: {
-        // Runs as three phases in place: personalized win → animated setup →
-        // social proof, then the review step.
-        const goal = (answers.biggest_goal ?? "").trim();
         const checklist = [
           t("questionnaire.processing.goal"),
           t("questionnaire.processing.startingPoint"),
           t("questionnaire.processing.journey"),
         ];
-
-        if (flowPhase === 0) {
-          return {
-            title: t("questionnaire.processing.winTitle"),
-            hint: t("questionnaire.processing.winHint"),
-            body: (
-              <div className="animate-step-in space-y-5">
-                <MilestoneIllustration className="mx-auto h-28 w-48" />
-                {goal ? (
-                  <SoftCard>
-                    <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                      {t("questionnaire.processing.winGoal")}
-                    </p>
-                    <p className="mt-2 text-base leading-snug">{goal}</p>
-                  </SoftCard>
-                ) : null}
-                <SoftCard className="bg-sky text-center">
-                  <p className="text-base leading-snug font-semibold text-on-tint">
-                    {t("questionnaire.processing.winMilestone", { date: milestoneDate })}
-                  </p>
-                </SoftCard>
-                <Button
-                  className="press h-13 w-full rounded-2xl text-base"
-                  onClick={() => {
-                    haptic.light();
-                    setFlowPhase(1);
-                  }}
-                >
-                  {t("questionnaire.continue")}
-                </Button>
-              </div>
-            ),
-          };
-        }
-
-        if (flowPhase === 1) {
-          return {
-            title: t("questionnaire.processing.title"),
-            hint: t("questionnaire.processing.hint"),
-            body: (
-              <div className="space-y-3" aria-live="polite">
+        return {
+          title: t("questionnaire.processing.title"),
+          hint: t("questionnaire.processing.hint"),
+          body: (
+            <div className="space-y-6" aria-live="polite">
+              <div className="space-y-3">
                 {checklist.map((label, index) => {
                   const complete = processingStage > index;
                   return (
@@ -634,45 +590,28 @@ function Questionnaire() {
                           <Check className="size-4" strokeWidth={3} aria-hidden />
                         </span>
                       ) : (
-                        <LoaderCircle
-                          className="size-7 shrink-0 animate-spin text-muted-foreground"
-                          aria-hidden
-                        />
+                        <LoaderCircle className="size-7 shrink-0 animate-spin text-muted-foreground" aria-hidden />
                       )}
                       <span className="font-medium">{label}</span>
                     </div>
                   );
                 })}
               </div>
-            ),
-          };
-        }
 
-        return {
-          title: t("questionnaire.processing.proofTitle"),
-          hint: t("questionnaire.processing.proofHint"),
-          body: (
-            <div className="animate-step-in space-y-5">
-              <SoftCard className="text-center">
+              <div
+                className={cn(
+                  "text-center transition-all duration-500",
+                  processingStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
+                )}
+              >
                 <div className="flex items-center justify-center gap-2 text-primary">
-                  <Star className="size-8 fill-current" aria-hidden />
-                  <span className="text-4xl font-semibold">
-                    {t("questionnaire.processing.rating")}
-                  </span>
+                  <Star className="size-7 fill-current" aria-hidden />
+                  <span className="text-3xl font-semibold">4.9</span>
                 </div>
                 <p className="mt-2 text-sm font-medium text-muted-foreground">
-                  {t("questionnaire.processing.reviews")}
+                  {t("questionnaire.processing.trustedBy")}
                 </p>
-              </SoftCard>
-              <Button
-                className="press h-13 w-full rounded-2xl text-base"
-                onClick={() => {
-                  haptic.light();
-                  setStep(12);
-                }}
-              >
-                {t("questionnaire.continue")}
-              </Button>
+              </div>
             </div>
           ),
         };
@@ -691,25 +630,20 @@ function Questionnaire() {
                 ))}
               </div>
               <div className="space-y-3">
-                {reviewDone ? null : (
-                  <Button
-                    className="press h-13 w-full rounded-2xl text-base"
-                    disabled={reviewing}
-                    onClick={() => void rateAndContinue()}
-                  >
-                    {reviewing ? (
-                      <LoaderCircle className="size-5 animate-spin" aria-hidden />
-                    ) : null}
-                    {t("questionnaire.rate.cta")}
-                  </Button>
-                )}
                 <Button
-                  variant={reviewDone ? "default" : "ghost"}
                   className="press h-13 w-full rounded-2xl text-base"
+                  disabled={reviewing}
+                  onClick={() => void rateAndContinue()}
+                >
+                  {t("questionnaire.rate.cta")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="press h-13 w-full rounded-2xl"
                   disabled={reviewing}
                   onClick={() => advance()}
                 >
-                  {reviewDone ? t("questionnaire.continue") : t("questionnaire.rate.later")}
+                  {t("questionnaire.rate.later")}
                 </Button>
               </div>
             </div>
@@ -859,19 +793,7 @@ function Questionnaire() {
           body: null,
         };
     }
-  }, [
-    step,
-    answers,
-    reasons,
-    t,
-    nameError,
-    contactError,
-    milestoneDate,
-    processingStage,
-    flowPhase,
-    reviewing,
-    reviewDone,
-  ]);
+  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage, reviewing]);
 
   const canContinue = (() => {
     switch (step) {
