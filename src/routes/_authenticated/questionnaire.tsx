@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Ban, Check, LoaderCircle, Lock, ShieldCheck, Star } from "lucide-react";
+import { ArrowRight, Ban, Check, LoaderCircle, Lock, ShieldCheck, Star } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
       { title: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
         name: "description",
-        content: "Fifteen quick steps so your no-contact plan fits your breakup.",
+        content: "Sixteen quick steps so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
@@ -61,7 +61,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 16;
+const STEPS = 17;
 
 function Choice({
   options,
