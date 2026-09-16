@@ -34,6 +34,7 @@ import {
   type BadgeStats,
 } from "@/lib/badges";
 import { celebrate } from "@/lib/celebrate";
+import { isLoggingOut } from "@/lib/logoutGuard";
 import { onceWithin, toastOnce } from "@/lib/toastOnce";
 import { daysSince } from "@/lib/streak";
 
@@ -133,7 +134,7 @@ export function useBadges(options: { autoUnlock?: boolean } = {}): BadgeState {
 
   const announced = useRef(false);
   useEffect(() => {
-    if (!autoUnlock || !enabled || unlockInFlight) return;
+    if (!autoUnlock || !enabled || unlockInFlight || isLoggingOut()) return;
     const keys = earnedBadgeKeys(stats);
     const fresh = keys.filter(
       (key) => !owned.has(key) && !announcedKeys.has(`${userId}:${key}`),

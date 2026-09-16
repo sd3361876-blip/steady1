@@ -1,5 +1,10 @@
 import { toast } from "sonner";
 
+import { isLoggingOut } from "@/lib/logoutGuard";
+
+/** The only message allowed to appear while signing out. */
+const LOGOUT_TOAST_IDS = new Set(["logged-out", "logout-error"]);
+
 /**
  * Toast de-duplication.
  *
@@ -31,6 +36,7 @@ type Variant = "default" | "success" | "error";
 
 /** Shows a message at most once per cooldown window, per id. */
 export function toastOnce(id: string, message: string, variant: Variant = "default"): void {
+  if (isLoggingOut() && !LOGOUT_TOAST_IDS.has(id)) return;
   if (!allow(id)) return;
   if (variant === "success") toast.success(message, { id });
   else if (variant === "error") toast.error(message, { id });
@@ -39,6 +45,7 @@ export function toastOnce(id: string, message: string, variant: Variant = "defau
 
 /** Runs a side effect (confetti, haptics, native notification) at most once. */
 export function onceWithin(id: string, run: () => void): void {
+  if (isLoggingOut()) return;
   if (!allow(`fx:${id}`)) return;
   run();
 }

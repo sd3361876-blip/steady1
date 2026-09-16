@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, type R
 import { supabase } from "@/integrations/supabase/client";
 import { analytics } from "@/lib/analytics";
 import { getCachedSession } from "@/lib/auth/session";
+import { endLogout } from "@/lib/logoutGuard";
 import { clearCrashUser, setCrashUser } from "@/lib/monitoring/crashlytics";
 import { syncNotificationDeviceState } from "@/lib/notifications/deviceState";
 import { deactivatePushToken, syncPushRegistration } from "@/lib/notifications/push";
@@ -41,6 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(nextSession);
       setLoading(false);
       if (nextSession?.user) {
+        // A live session means we're no longer in a sign-out flow.
+        endLogout();
         setCrashUser(nextSession.user.id);
         analytics.track("login", { provider: nextSession.user.app_metadata?.provider ?? "unknown" });
         void identifyUser(nextSession.user.id, nextSession.user.email ?? undefined);

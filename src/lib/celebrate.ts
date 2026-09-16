@@ -1,3 +1,4 @@
+import { isLoggingOut } from "@/lib/logoutGuard";
 import { haptic } from "@/lib/native/haptics";
 
 /**
@@ -105,7 +106,14 @@ function teardown() {
 }
 
 
+/** Removes any running burst immediately (used when signing out). */
+export function cancelCelebration(): void {
+  if (typeof document === "undefined") return;
+  teardown();
+}
+
 export async function celebrate(): Promise<void> {
+  if (isLoggingOut()) return;
   haptic.success();
   if (typeof window === "undefined" || typeof document === "undefined") return;
   if (prefersReducedMotion()) return;

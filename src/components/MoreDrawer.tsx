@@ -33,6 +33,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DateTimeField } from "@/components/DateTimeField";
 import { JournalLockSetting } from "@/components/journalLock/JournalLockSetting";
 import { clampToNow } from "@/lib/datetime";
+import { cancelCelebration } from "@/lib/celebrate";
+import { beginLogout, endLogout } from "@/lib/logoutGuard";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -46,6 +48,8 @@ import { haptic } from "@/lib/native/haptics";
 import { shareApp } from "@/lib/share";
 import { PRIVACY_URL, TERMS_URL, openExternalUrl } from "@/lib/openExternal";
 import { SUPPORT_EMAIL, copySupportEmail, openFeedbackEmail } from "@/lib/feedback";
+import { toast } from "sonner";
+
 import { toastOnce } from "@/lib/toastOnce";
 import { cn } from "@/lib/utils";
 
@@ -104,6 +108,12 @@ export function MoreDrawer({
 
   const logOut = async () => {
     haptic.light();
+    // Suppress badge/celebration side effects for the whole sign-out flow:
+    // clearing the caches otherwise makes the badge engine re-announce unlocks.
+    beginLogout();
+    cancelCelebration();
+    // Drop any badge toast that is still on screen.
+    toast.dismiss();
     try {
       await queryClient.cancelQueries();
       queryClient.clear();
@@ -112,6 +122,7 @@ export function MoreDrawer({
       toastOnce("logged-out", t("toast.loggedOut"), "success");
       void navigate({ to: "/auth", replace: true });
     } catch (error) {
+      endLogout();
       toastOnce("logout-error", humanizeError(error), "error");
     }
   };
