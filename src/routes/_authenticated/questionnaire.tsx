@@ -692,7 +692,7 @@ function Questionnaire() {
           ),
         };
       }
-      case 14:
+      case 16:
         return {
           title: t("questionnaire.step10.title"),
           hint: t("questionnaire.step10.hint"),
@@ -717,7 +717,7 @@ function Questionnaire() {
             </div>
           ),
         };
-      case 15:
+      case 17:
         return {
           title: t("questionnaire.step11.title"),
           hint: t("questionnaire.step11.hint"),
@@ -729,7 +729,7 @@ function Questionnaire() {
             />
           ),
         };
-      case 16: {
+      case 14: {
         // "SOCIAL PROOF + TRANSFORMATION" — informational BEFORE → AFTER
         // comparison, Continue advances. The 30-day timeframe mirrors the
         // app's real first milestone (signup date + 30 days); it describes
@@ -817,14 +817,14 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 14:
+      case 16:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
     }
   })();
 
-  if (step === 17) {
+  if (step === 15) {
     return (
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+5rem)]">
         <main className="animate-step-in flex min-h-0 flex-1 items-start justify-center overflow-hidden">
