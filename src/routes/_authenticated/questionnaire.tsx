@@ -222,15 +222,16 @@ function Questionnaire() {
     setStep((current) => Math.min(STEPS - 1, current + 1));
   };
 
-  // Rating screen: opens the Google Play in-app review sheet, then continues
-  // regardless of whether it appeared, was dismissed or a review was left.
+  // Review step: opens the official Google Play in-app review flow. No rating
+  // is asked for first, nobody is filtered or rewarded. Whatever happens
+  // (shown, dismissed, unavailable) the user then continues with Continue.
   const rateAndContinue = async () => {
     setReviewing(true);
     try {
       await requestAppReview();
     } finally {
       setReviewing(false);
-      advance();
+      setReviewDone(true);
     }
   };
 
