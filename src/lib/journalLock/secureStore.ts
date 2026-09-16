@@ -32,7 +32,7 @@ export const journalLockStore = {
     try {
       if (isNative()) {
         const store = await nativeStore();
-        return await store.getItem(key);
+        return await store.getItem(nativeKey(key));
       }
       if (typeof window === "undefined") return null;
       return window.localStorage.getItem(PREFIX + key);
