@@ -1,12 +1,26 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, Ban, Check, LoaderCircle, Lock, ShieldCheck, Star } from "lucide-react";
+import {
+  ArrowRight,
+  Ban,
+  Brain,
+  ChartNoAxesColumnIncreasing,
+  Check,
+  Heart,
+  LoaderCircle,
+  Lock,
+  ShieldCheck,
+  SmartphoneOff,
+  Sprout,
+  Star,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 import { CommitmentCanvas } from "@/components/CommitmentCanvas";
 import { MilestoneIllustration } from "@/components/illustrations";
+import { Mascot } from "@/components/Mascot";
 import { SoftCard } from "@/components/SoftCard";
 import { DateTimeField } from "@/components/DateTimeField";
 import { Button } from "@/components/ui/button";
@@ -61,7 +75,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 17;
+const STEPS = 18;
 
 function Choice({
   options,
@@ -683,7 +697,44 @@ function Questionnaire() {
           ),
         };
       }
-      case 14: {
+      case 14:
+        return {
+          title: t("questionnaire.step10.title"),
+          hint: t("questionnaire.step10.hint"),
+          body: (
+            <div className="space-y-3">
+              <Choice
+                options={[t("questionnaire.step10.yes"), t("questionnaire.step10.no")]}
+                value={
+                  answers.wants_reminders === null || answers.wants_reminders === undefined
+                    ? null
+                    : answers.wants_reminders
+                      ? t("questionnaire.step10.yes")
+                      : t("questionnaire.step10.no")
+                }
+                onSelect={(option) =>
+                  set({ wants_reminders: option === t("questionnaire.step10.yes") })
+                }
+              />
+              <SoftCard className="bg-sky">
+                <p className="text-sm text-on-tint">{t("questionnaire.step10.note")}</p>
+              </SoftCard>
+            </div>
+          ),
+        };
+      case 15:
+        return {
+          title: t("questionnaire.step11.title"),
+          hint: t("questionnaire.step11.hint"),
+          body: (
+            <Choice
+              options={t("questionnaire.step11.options", { returnObjects: true }) as string[]}
+              value={answers.referral_source}
+              onSelect={(referral_source) => set({ referral_source })}
+            />
+          ),
+        };
+      case 16: {
         // "SOCIAL PROOF + TRANSFORMATION" — informational BEFORE → AFTER
         // comparison, Continue advances. The 30-day timeframe mirrors the
         // app's real first milestone (signup date + 30 days); it describes
@@ -740,42 +791,11 @@ function Questionnaire() {
           ),
         };
       }
-      case 15:
-        return {
-          title: t("questionnaire.step10.title"),
-          hint: t("questionnaire.step10.hint"),
-          body: (
-            <div className="space-y-3">
-              <Choice
-                options={[t("questionnaire.step10.yes"), t("questionnaire.step10.no")]}
-                value={
-                  answers.wants_reminders === null || answers.wants_reminders === undefined
-                    ? null
-                    : answers.wants_reminders
-                      ? t("questionnaire.step10.yes")
-                      : t("questionnaire.step10.no")
-                }
-                onSelect={(option) =>
-                  set({ wants_reminders: option === t("questionnaire.step10.yes") })
-                }
-              />
-              <SoftCard className="bg-sky">
-                <p className="text-sm text-on-tint">{t("questionnaire.step10.note")}</p>
-              </SoftCard>
-            </div>
-          ),
-        };
       default:
         return {
-          title: t("questionnaire.step11.title"),
-          hint: t("questionnaire.step11.hint"),
-          body: (
-            <Choice
-              options={t("questionnaire.step11.options", { returnObjects: true }) as string[]}
-              value={answers.referral_source}
-              onSelect={(referral_source) => set({ referral_source })}
-            />
-          ),
+          title: "",
+          hint: "",
+          body: null,
         };
     }
   }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage, reviewing]);
@@ -802,12 +822,89 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 15:
+      case 14:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
     }
   })();
+
+  if (step === 17) {
+    const benefits = [
+      { icon: Brain, label: t("questionnaire.trialOffer.emotionalSupport"), tone: "bg-coral" },
+      { icon: SmartphoneOff, label: t("questionnaire.trialOffer.urgeControl"), tone: "bg-sky" },
+      { icon: Sprout, label: t("questionnaire.trialOffer.healingJourney"), tone: "bg-mint" },
+      {
+        icon: ChartNoAxesColumnIncreasing,
+        label: t("questionnaire.trialOffer.trackProgress"),
+        tone: "bg-lavender",
+      },
+    ] as const;
+
+    return (
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background px-5 pt-[calc(env(safe-area-inset-top)+1rem)] pb-[calc(env(safe-area-inset-bottom)+6.5rem)]">
+        <div className="flex items-center gap-3" aria-label={`${step + 1} of ${STEPS}`}>
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div className="h-full w-full rounded-full bg-primary" />
+          </div>
+          <span className="text-xs font-medium text-muted-foreground">{step + 1}/{STEPS}</span>
+        </div>
+
+        <main className="animate-step-in flex flex-1 flex-col items-center text-center">
+          <div className="mt-3 flex items-center gap-1.5 text-primary">
+            <Sprout className="size-6" strokeWidth={2.5} aria-hidden />
+            <span className="text-xl font-bold text-foreground">{t("questionnaire.trialOffer.brand")}</span>
+          </div>
+          <p className="mt-0.5 text-xs font-medium text-muted-foreground">
+            {t("questionnaire.trialOffer.tagline")}
+          </p>
+
+          <h1 className="mt-5 text-[2rem] leading-[1.08] font-bold text-foreground">
+            {t("questionnaire.trialOffer.titleStart")}
+            <br />
+            <span className="text-primary">{t("questionnaire.trialOffer.titleFree")}</span>{" "}
+            {t("questionnaire.trialOffer.titleEnd")}
+          </h1>
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+            {t("questionnaire.trialOffer.subtitle")}
+          </p>
+
+          <div className="relative mt-3 flex h-48 w-full items-center justify-center">
+            <Heart className="absolute top-9 right-[14%] size-6 fill-current text-destructive/70" aria-hidden />
+            <Heart className="absolute bottom-8 left-[13%] size-5 fill-current text-destructive/60" aria-hidden />
+            <span className="absolute top-14 left-[12%] h-1 w-8 rotate-[32deg] rounded-full bg-primary/70" aria-hidden />
+            <span className="absolute top-16 right-[10%] h-1 w-8 -rotate-[32deg] rounded-full bg-primary/70" aria-hidden />
+            <Mascot size="hero" className="size-48" alt="Steady tortoise mascot" />
+          </div>
+
+          <h2 className="mt-1 text-base font-bold text-foreground">
+            {t("questionnaire.trialOffer.supportTitle")}
+          </h2>
+          <div className="mt-4 grid w-full grid-cols-4 gap-2">
+            {benefits.map(({ icon: Icon, label, tone }) => (
+              <div key={label} className="flex min-w-0 flex-col items-center">
+                <span className={cn("flex size-12 items-center justify-center rounded-full", tone)}>
+                  <Icon className="size-6 text-on-tint" strokeWidth={2.2} aria-hidden />
+                </span>
+                <p className="mt-2 text-[0.65rem] leading-tight font-medium text-foreground">{label}</p>
+              </div>
+            ))}
+          </div>
+        </main>
+
+        <div className="surface-blur fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-md px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+          <Button
+            className="press h-13 w-full rounded-xl text-sm font-semibold shadow-lg"
+            disabled={saving}
+            onClick={() => void finish()}
+          >
+            {saving ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : null}
+            {t("questionnaire.trialOffer.cta")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
