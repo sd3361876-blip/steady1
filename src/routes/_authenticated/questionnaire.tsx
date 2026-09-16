@@ -569,17 +569,55 @@ function Questionnaire() {
         };
       }
       case 11: {
+        // Runs as three phases in place: personalized win → animated setup →
+        // social proof, then the review step.
+        const goal = (answers.biggest_goal ?? "").trim();
         const checklist = [
           t("questionnaire.processing.goal"),
           t("questionnaire.processing.startingPoint"),
           t("questionnaire.processing.journey"),
         ];
-        return {
-          title: t("questionnaire.processing.title"),
-          hint: t("questionnaire.processing.hint"),
-          body: (
-            <div className="space-y-6" aria-live="polite">
-              <div className="space-y-3">
+
+        if (flowPhase === 0) {
+          return {
+            title: t("questionnaire.processing.winTitle"),
+            hint: t("questionnaire.processing.winHint"),
+            body: (
+              <div className="animate-step-in space-y-5">
+                <MilestoneIllustration className="mx-auto h-28 w-48" />
+                {goal ? (
+                  <SoftCard>
+                    <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                      {t("questionnaire.processing.winGoal")}
+                    </p>
+                    <p className="mt-2 text-base leading-snug">{goal}</p>
+                  </SoftCard>
+                ) : null}
+                <SoftCard className="bg-sky text-center">
+                  <p className="text-base leading-snug font-semibold text-on-tint">
+                    {t("questionnaire.processing.winMilestone", { date: milestoneDate })}
+                  </p>
+                </SoftCard>
+                <Button
+                  className="press h-13 w-full rounded-2xl text-base"
+                  onClick={() => {
+                    haptic.light();
+                    setFlowPhase(1);
+                  }}
+                >
+                  {t("questionnaire.continue")}
+                </Button>
+              </div>
+            ),
+          };
+        }
+
+        if (flowPhase === 1) {
+          return {
+            title: t("questionnaire.processing.title"),
+            hint: t("questionnaire.processing.hint"),
+            body: (
+              <div className="space-y-3" aria-live="polite">
                 {checklist.map((label, index) => {
                   const complete = processingStage > index;
                   return (
@@ -595,28 +633,45 @@ function Questionnaire() {
                           <Check className="size-4" strokeWidth={3} aria-hidden />
                         </span>
                       ) : (
-                        <LoaderCircle className="size-7 shrink-0 animate-spin text-muted-foreground" aria-hidden />
+                        <LoaderCircle
+                          className="size-7 shrink-0 animate-spin text-muted-foreground"
+                          aria-hidden
+                        />
                       )}
                       <span className="font-medium">{label}</span>
                     </div>
                   );
                 })}
               </div>
+            ),
+          };
+        }
 
-              <div
-                className={cn(
-                  "text-center transition-all duration-500",
-                  processingStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
-                )}
-              >
+        return {
+          title: t("questionnaire.processing.proofTitle"),
+          hint: t("questionnaire.processing.proofHint"),
+          body: (
+            <div className="animate-step-in space-y-5">
+              <SoftCard className="text-center">
                 <div className="flex items-center justify-center gap-2 text-primary">
-                  <Star className="size-7 fill-current" aria-hidden />
-                  <span className="text-3xl font-semibold">4.9</span>
+                  <Star className="size-8 fill-current" aria-hidden />
+                  <span className="text-4xl font-semibold">
+                    {t("questionnaire.processing.rating")}
+                  </span>
                 </div>
                 <p className="mt-2 text-sm font-medium text-muted-foreground">
-                  {t("questionnaire.processing.trustedBy")}
+                  {t("questionnaire.processing.reviews")}
                 </p>
-              </div>
+              </SoftCard>
+              <Button
+                className="press h-13 w-full rounded-2xl text-base"
+                onClick={() => {
+                  haptic.light();
+                  setStep(12);
+                }}
+              >
+                {t("questionnaire.continue")}
+              </Button>
             </div>
           ),
         };
