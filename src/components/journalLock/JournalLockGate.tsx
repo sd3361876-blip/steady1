@@ -1,7 +1,10 @@
+import { useRouter } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { JournalUnlockPanel } from "@/components/journalLock/JournalUnlockPanel";
 import { SoftCard } from "@/components/SoftCard";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import {
   clearJournalUnlocked,
@@ -18,6 +21,7 @@ import {
  * (leaving the journal) or after the app has been backgrounded too long.
  */
 export function JournalLockGate({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const { user } = useAuth();
   const userId = user?.id ?? "";
   const [config, setConfig] = useState<JournalLockConfig | null>(null);
@@ -53,7 +57,17 @@ export function JournalLockGate({ children }: { children: ReactNode }) {
   if (!config.enabled || unlocked) return <>{children}</>;
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-10">
+    <div className="relative mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-10">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label="Back"
+        className="press absolute left-5 top-[calc(env(safe-area-inset-top)+1.5rem)] rounded-full"
+        onClick={() => router.history.back()}
+      >
+        <ArrowLeft className="size-5" aria-hidden />
+      </Button>
       <SoftCard className="space-y-4">
         <JournalUnlockPanel
           userId={userId}

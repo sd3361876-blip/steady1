@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import {
   Bug,
   CalendarClock,
+  ChevronDown,
   Crown,
   FileText,
   Info,
@@ -30,8 +31,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DateTimeField } from "@/components/DateTimeField";
+import { JournalLockSetting } from "@/components/journalLock/JournalLockSetting";
 import { clampToNow } from "@/lib/datetime";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -67,6 +70,8 @@ export function MoreDrawer({
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [redoOpen, setRedoOpen] = useState(false);
   const [noEmailOpen, setNoEmailOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const [newDate, setNewDate] = useState(() => new Date().toISOString());
 
   const profile = useQuery({
@@ -111,7 +116,7 @@ export function MoreDrawer({
     }
   };
 
-  const items = [
+  const directItems = [
     {
       icon: CalendarClock,
       label: t("drawer.resetDate"),
@@ -130,6 +135,9 @@ export function MoreDrawer({
           "https://play.google.com/store/apps/details?id=com.nocontacttracker.app",
         ),
     },
+  ];
+
+  const helpItems = [
     {
       icon: MessageSquareHeart,
       label: t("drawer.feedback", "Give Feedback"),
@@ -149,17 +157,6 @@ export function MoreDrawer({
       },
     },
     {
-      icon: FileText,
-      label: t("drawer.privacy"),
-      onClick: () => void openExternalUrl(PRIVACY_URL),
-    },
-    {
-      icon: ScrollText,
-      label: t("drawer.terms"),
-      onClick: () => void openExternalUrl(TERMS_URL),
-    },
-    { icon: Info, label: t("drawer.about"), onClick: () => setAboutOpen(true) },
-    {
       icon: RotateCcw,
       label: t("drawer.redoOnboarding", "Redo Onboarding"),
       onClick: () => setRedoOpen(true),
@@ -171,12 +168,45 @@ export function MoreDrawer({
         if (!busy) void restore();
       },
     },
+  ];
+
+  const infoItems = [
     {
-      icon: LogOut,
-      label: t("common.logOut"),
-      onClick: () => setLogoutOpen(true),
+      icon: FileText,
+      label: t("drawer.privacy"),
+      onClick: () => void openExternalUrl(PRIVACY_URL),
+    },
+    { icon: Info, label: t("drawer.about"), onClick: () => setAboutOpen(true) },
+    {
+      icon: ScrollText,
+      label: t("drawer.terms"),
+      onClick: () => void openExternalUrl(TERMS_URL),
     },
   ];
+
+  const logoutItem = {
+    icon: LogOut,
+    label: t("common.logOut"),
+    onClick: () => setLogoutOpen(true),
+  };
+
+  const renderMenuItem = ({ icon: Icon, label, onClick }: (typeof directItems)[number]) => (
+    <button
+      key={label}
+      type="button"
+      onClick={() => {
+        haptic.light();
+        onClick();
+      }}
+      className={cn(
+        "press flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-left",
+        "transition-colors hover:bg-muted active:bg-muted",
+      )}
+    >
+      <Icon className="size-5 text-muted-foreground" aria-hidden />
+      <span className="text-sm font-medium">{label}</span>
+    </button>
+  );
 
   return (
     <>
@@ -244,25 +274,68 @@ export function MoreDrawer({
                 </span>
               </span>
             </button>
-            {items.map(({ icon: Icon, label, onClick }, index) => (
-              <div key={label}>
+            {directItems.map((item, index) => (
+              <div key={item.label}>
                 {index > 0 ? <div className="mx-4 h-px bg-border" /> : null}
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptic.light();
-                    onClick();
-                  }}
-                  className={cn(
-                    "press flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-left",
-                    "transition-colors hover:bg-muted active:bg-muted",
-                  )}
-                >
-                  <Icon className="size-5 text-muted-foreground" aria-hidden />
-                  <span className="text-sm font-medium">{label}</span>
-                </button>
+                {renderMenuItem(item)}
               </div>
             ))}
+
+            <div className="mx-4 h-px bg-border" />
+            <div className="px-4 py-3.5">
+              <JournalLockSetting />
+            </div>
+
+            <div className="mx-4 h-px bg-border" />
+            <Collapsible open={helpOpen} onOpenChange={setHelpOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="press h-auto w-full justify-between rounded-2xl px-4 py-3.5 text-left"
+                >
+                  <span className="text-xs font-semibold uppercase text-muted-foreground">
+                    HELP &amp; ACCOUNT
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-muted-foreground transition-transform",
+                      helpOpen && "rotate-180",
+                    )}
+                    aria-hidden
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-3">
+                {helpItems.map(renderMenuItem)}
+              </CollapsibleContent>
+            </Collapsible>
+
+            <div className="mx-4 h-px bg-border" />
+            <Collapsible open={infoOpen} onOpenChange={setInfoOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="press h-auto w-full justify-between rounded-2xl px-4 py-3.5 text-left"
+                >
+                  <span className="text-xs font-semibold uppercase text-muted-foreground">
+                    INFO &amp; LEGAL
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 text-muted-foreground transition-transform",
+                      infoOpen && "rotate-180",
+                    )}
+                    aria-hidden
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pl-3">
+                {infoItems.map(renderMenuItem)}
+              </CollapsibleContent>
+            </Collapsible>
+
+            <div className="mx-4 h-px bg-border" />
+            {renderMenuItem(logoutItem)}
           </nav>
         </SheetContent>
       </Sheet>
