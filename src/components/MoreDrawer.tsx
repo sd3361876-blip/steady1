@@ -118,6 +118,7 @@ export function MoreDrawer({
       toastOnce("logged-out", t("toast.loggedOut"), "success");
       void navigate({ to: "/auth", replace: true });
     } catch (error) {
+      endLogout();
       toastOnce("logout-error", humanizeError(error), "error");
     }
   };
