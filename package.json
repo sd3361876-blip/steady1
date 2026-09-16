@@ -15,6 +15,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@aparajita/capacitor-biometric-auth": "^10.0.0",
+    "@aparajita/capacitor-secure-storage": "^8.0.0",
     "@capacitor-firebase/analytics": "^8.3.0",
     "@capacitor-firebase/crashlytics": "^8.3.0",
     "@capacitor-firebase/performance": "^8.3.0",
