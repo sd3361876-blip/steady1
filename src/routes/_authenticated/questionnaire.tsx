@@ -802,7 +802,7 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 14:
+      case 15:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
