@@ -45,7 +45,7 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
       { title: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
         name: "description",
-        content: "Sixteen quick steps so your no-contact plan fits your breakup.",
+        content: "Eighteen quick steps so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
@@ -827,6 +827,17 @@ function Questionnaire() {
   if (step === 15) {
     return (
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+5rem)]">
+        <div className="flex items-center gap-3 px-5 pt-3" aria-label={`${step + 1} of ${STEPS}`}>
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary"
+              style={{ width: `${((step + 1) / STEPS) * 100}%` }}
+            />
+          </div>
+          <span className="text-xs font-medium text-muted-foreground">
+            {step + 1}/{STEPS}
+          </span>
+        </div>
         <main className="animate-step-in flex min-h-0 flex-1 items-start justify-center overflow-hidden">
           <img
             src={trialOfferArtwork.url}
