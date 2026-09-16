@@ -1,3 +1,3 @@
-- [x] Remove old illustrations from the nine pages that rendered them
-- [x] Confirm Daily Guided Exercise has no old illustration
-- [x] Validate the focused change
+- [x] Make Red Flag option taps respond immediately without blocking the page
+- [x] Add the uploaded transparent Red Flag success animation
+- [ ] Verify the focused Red Flags behavior and bundled video
