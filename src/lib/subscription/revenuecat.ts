@@ -91,12 +91,15 @@ export async function configureRevenueCat(appUserId?: string): Promise<void> {
   }
 }
 
-export async function identifyUser(appUserId: string): Promise<void> {
+export async function identifyUser(appUserId: string, email?: string): Promise<void> {
   if (!isNative()) return;
   await safeNative(async () => {
     await configureRevenueCat(appUserId);
     const { Purchases } = await rc();
     await Purchases.logIn({ appUserID: appUserId });
+    if (email) {
+      await Purchases.setEmail({ email });
+    }
   });
 }
 
