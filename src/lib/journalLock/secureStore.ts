@@ -24,9 +24,9 @@ export type JournalLockDiagnostic = {
   phase: "pending" | "success" | "failed";
   step: string;
   isNative: boolean;
-  errorName?: string;
-  errorMessage?: string;
-  errorStack?: string;
+  errorName?: string | undefined;
+  errorMessage?: string | undefined;
+  errorStack?: string | undefined;
   updatedAt: string;
 };
 
