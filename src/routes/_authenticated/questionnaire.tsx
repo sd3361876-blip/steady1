@@ -1,6 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowRight, Ban, Check, LoaderCircle, Lock, ShieldCheck, Star } from "lucide-react";
+import {
+  ArrowRight,
+  Ban,
+  Check,
+  LoaderCircle,
+  Lock,
+  ShieldCheck,
+  Star,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -25,6 +33,7 @@ import { requestAppReview } from "@/lib/native/inAppReview";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
+import trialOfferArtwork from "@/assets/onboarding/steady-7-day-trial.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/questionnaire")({
   validateSearch: (search: Record<string, unknown>): { redo?: boolean } =>
@@ -36,7 +45,7 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
       { title: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
         name: "description",
-        content: "Sixteen quick steps so your no-contact plan fits your breakup.",
+        content: "Eighteen quick steps so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
@@ -61,7 +70,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 17;
+const STEPS = 18;
 
 function Choice({
   options,
@@ -683,6 +692,43 @@ function Questionnaire() {
           ),
         };
       }
+      case 16:
+        return {
+          title: t("questionnaire.step10.title"),
+          hint: t("questionnaire.step10.hint"),
+          body: (
+            <div className="space-y-3">
+              <Choice
+                options={[t("questionnaire.step10.yes"), t("questionnaire.step10.no")]}
+                value={
+                  answers.wants_reminders === null || answers.wants_reminders === undefined
+                    ? null
+                    : answers.wants_reminders
+                      ? t("questionnaire.step10.yes")
+                      : t("questionnaire.step10.no")
+                }
+                onSelect={(option) =>
+                  set({ wants_reminders: option === t("questionnaire.step10.yes") })
+                }
+              />
+              <SoftCard className="bg-sky">
+                <p className="text-sm text-on-tint">{t("questionnaire.step10.note")}</p>
+              </SoftCard>
+            </div>
+          ),
+        };
+      case 17:
+        return {
+          title: t("questionnaire.step11.title"),
+          hint: t("questionnaire.step11.hint"),
+          body: (
+            <Choice
+              options={t("questionnaire.step11.options", { returnObjects: true }) as string[]}
+              value={answers.referral_source}
+              onSelect={(referral_source) => set({ referral_source })}
+            />
+          ),
+        };
       case 14: {
         // "SOCIAL PROOF + TRANSFORMATION" — informational BEFORE → AFTER
         // comparison, Continue advances. The 30-day timeframe mirrors the
@@ -740,42 +786,11 @@ function Questionnaire() {
           ),
         };
       }
-      case 15:
-        return {
-          title: t("questionnaire.step10.title"),
-          hint: t("questionnaire.step10.hint"),
-          body: (
-            <div className="space-y-3">
-              <Choice
-                options={[t("questionnaire.step10.yes"), t("questionnaire.step10.no")]}
-                value={
-                  answers.wants_reminders === null || answers.wants_reminders === undefined
-                    ? null
-                    : answers.wants_reminders
-                      ? t("questionnaire.step10.yes")
-                      : t("questionnaire.step10.no")
-                }
-                onSelect={(option) =>
-                  set({ wants_reminders: option === t("questionnaire.step10.yes") })
-                }
-              />
-              <SoftCard className="bg-sky">
-                <p className="text-sm text-on-tint">{t("questionnaire.step10.note")}</p>
-              </SoftCard>
-            </div>
-          ),
-        };
       default:
         return {
-          title: t("questionnaire.step11.title"),
-          hint: t("questionnaire.step11.hint"),
-          body: (
-            <Choice
-              options={t("questionnaire.step11.options", { returnObjects: true }) as string[]}
-              value={answers.referral_source}
-              onSelect={(referral_source) => set({ referral_source })}
-            />
-          ),
+          title: "",
+          hint: "",
+          body: null,
         };
     }
   }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage, reviewing]);
@@ -802,12 +817,50 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 15:
+      case 16:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
     }
   })();
+
+  if (step === 15) {
+    return (
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+5rem)]">
+        <div className="flex items-center gap-3 px-5 pt-3" aria-label={`${step + 1} of ${STEPS}`}>
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary"
+              style={{ width: `${((step + 1) / STEPS) * 100}%` }}
+            />
+          </div>
+          <span className="text-xs font-medium text-muted-foreground">
+            {step + 1}/{STEPS}
+          </span>
+        </div>
+        <main className="animate-step-in flex min-h-0 flex-1 items-start justify-center overflow-hidden">
+          <img
+            src={trialOfferArtwork.url}
+            alt="Start your 7-day free Steady trial with daily emotional support, no-contact tools, a personalized healing journey, and progress tracking"
+            className="h-full max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-5rem)] w-full object-contain object-top"
+            loading="eager"
+            decoding="async"
+          />
+        </main>
+
+        <div className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-md bg-background px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+          <Button
+            className="press h-12 w-full rounded-xl text-sm font-semibold shadow-lg"
+            disabled={saving}
+            onClick={() => void finish()}
+          >
+            {saving ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : null}
+            {t("questionnaire.trialOffer.cta")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
