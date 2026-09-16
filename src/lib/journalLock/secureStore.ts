@@ -13,11 +13,19 @@ import { isNative } from "@/lib/native/platform";
  */
 const PREFIX = "steady_journal_lock_";
 
+/**
+ * NOTE: the plugin's `setKeyPrefix` is a JS-only helper that is NOT implemented
+ * as a native Android method. Calling it on Android dispatches a bridge call
+ * that Capacitor only logs and never settles, so the awaited promise hangs
+ * forever. We therefore prefix keys ourselves and only call methods that really
+ * exist natively (internalGetItem/SetItem/RemoveItem via get/set/removeItem).
+ */
 async function nativeStore() {
   const { SecureStorage } = await import("@aparajita/capacitor-secure-storage");
-  await SecureStorage.setKeyPrefix(PREFIX);
   return SecureStorage;
 }
+
+const nativeKey = (key: string) => PREFIX + key;
 
 export const journalLockStore = {
   async get(key: string): Promise<string | null> {
