@@ -33,7 +33,7 @@ import { requestAppReview } from "@/lib/native/inAppReview";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
-import trialOfferArtwork from "@/assets/onboarding/steady-7-day-trial.png.asset.json";
+import trialOfferArtwork from "@/assets/onboarding/steady-trial-1080x1920.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/questionnaire")({
   validateSearch: (search: Record<string, unknown>): { redo?: boolean } =>
@@ -826,7 +826,9 @@ function Questionnaire() {
 
   if (step === 15) {
     return (
-      <div className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col overflow-hidden">
+      // Full-screen paywall: the 9:16 artwork IS the screen, edge to edge.
+      // No progress bar and no card/panel — the CTA floats over the graphic.
+      <div className="relative h-dvh w-full overflow-hidden bg-white">
         <img
           src={trialOfferArtwork.url}
           alt="Start your 7-day free Steady trial with daily emotional support, no-contact tools, a personalized healing journey, and progress tracking"
@@ -835,26 +837,14 @@ function Questionnaire() {
           decoding="async"
         />
 
-        <div
-          className="relative z-10 flex items-center gap-3 px-5 pt-[calc(env(safe-area-inset-top)+0.75rem)]"
-          aria-label={`${step + 1} of ${STEPS}`}
-        >
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/15">
-            <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${((step + 1) / STEPS) * 100}%` }}
-            />
-          </div>
-          <span className="text-xs font-medium text-foreground/70">
-            {step + 1}/{STEPS}
-          </span>
-        </div>
-
-        <div className="relative z-10 mt-auto px-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
+        <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-[calc(env(safe-area-inset-bottom)+1.75rem)]">
           <Button
             className="press h-14 w-full rounded-full text-base font-semibold shadow-xl"
             disabled={saving}
-            onClick={() => void finish()}
+            onClick={() => {
+              haptic.light();
+              advance();
+            }}
           >
             {saving ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : null}
             {t("questionnaire.trialOffer.cta")}
