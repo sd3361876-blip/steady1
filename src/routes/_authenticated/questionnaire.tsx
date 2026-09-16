@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+import { CommitmentCanvas } from "@/components/CommitmentCanvas";
 import { SoftCard } from "@/components/SoftCard";
 import { DateTimeField } from "@/components/DateTimeField";
 import { Button } from "@/components/ui/button";
@@ -416,20 +417,46 @@ function Questionnaire() {
             </div>
           ),
         };
-      case 9:
+      case 9: {
+        const goal = (answers.biggest_goal ?? "").trim();
         return {
           title: t("questionnaire.step9.title"),
           hint: t("questionnaire.step9.hint"),
           body: (
-            <Textarea
-              maxLength={280}
-              value={answers.biggest_goal ?? ""}
-              onChange={(event) => set({ biggest_goal: event.target.value })}
-              placeholder={t("questionnaire.step9.placeholder")}
-              className="min-h-32 rounded-3xl"
-            />
+            <div className="space-y-5">
+              <Textarea
+                maxLength={280}
+                value={answers.biggest_goal ?? ""}
+                onChange={(event) => set({ biggest_goal: event.target.value })}
+                placeholder={t("questionnaire.step9.placeholder")}
+                className="min-h-32 rounded-3xl"
+              />
+              {goal ? (
+                <div className="animate-step-in space-y-5">
+                  <SoftCard className="bg-sky">
+                    <p className="text-xs font-medium tracking-wide text-on-tint/80 uppercase">
+                      {t("questionnaire.step9.workingToward")}
+                    </p>
+                    <p className="mt-2 text-base leading-snug text-on-tint">{goal}</p>
+                  </SoftCard>
+                  <div className="space-y-2">
+                    <p className="text-base font-semibold">
+                      {t("questionnaire.step9.commitPrompt")}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("questionnaire.step9.commitHint")}
+                    </p>
+                    <CommitmentCanvas
+                      clearLabel={t("questionnaire.step9.clearDrawing")}
+                      onChange={(dataUrl) => set({ commitment_drawing: dataUrl })}
+                    />
+                  </div>
+                </div>
+              ) : null}
+            </div>
           ),
         };
+      }
       case 10:
         return {
           title: t("questionnaire.step10.title"),
