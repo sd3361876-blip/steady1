@@ -8,6 +8,7 @@ import {
   KeyRound,
   Pencil,
   Moon,
+  ShieldCheck,
   Trash2,
   Upload,
   UserRound,
@@ -17,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { SoftCard } from "@/components/SoftCard";
+import { JournalLockSetting } from "@/components/journalLock/JournalLockSetting";
 import { DateTimeField } from "@/components/DateTimeField";
 import { clampToNow } from "@/lib/datetime";
 import { AvatarCropper } from "@/components/AvatarCropper";
@@ -320,7 +322,6 @@ function SettingsScreen() {
     })();
   };
 
-
   const saveProfile = async () => {
     haptic.light();
     await update.mutateAsync({
@@ -617,6 +618,15 @@ function SettingsScreen() {
               <SelectItem value="dark">{t("settings.themeDark")}</SelectItem>
             </SelectContent>
           </Select>
+        </SoftCard>
+
+        <SoftCard className="space-y-4">
+          <Row
+            icon={ShieldCheck}
+            title="Privacy &amp; Security"
+            description="Control who can open your private spaces."
+          />
+          <JournalLockSetting />
         </SoftCard>
 
         <Button
