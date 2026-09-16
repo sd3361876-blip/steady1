@@ -279,6 +279,14 @@ export const screensEn = {
       milestoneLine: "Your first Steady milestone is {{date}}.",
       encouragement: "You have more potential than you may feel right now.",
     },
+    processing: {
+      title: "Building your personalized Steady plan…",
+      hint: "Bringing everything together for you.",
+      goal: "Your goal",
+      startingPoint: "Your starting point",
+      journey: "Your Steady journey",
+      trustedBy: "Trusted by 1,000 people",
+    },
     step10: {
       title: "Want gentle reminders?",
       hint: "A morning nudge and an evening check-in. No spam, ever.",

@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { Check, LoaderCircle, Star } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/_authenticated/questionnaire")({
       { title: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
         name: "description",
-        content: "Thirteen quick questions so your no-contact plan fits your breakup.",
+        content: "Fourteen quick steps so your no-contact plan fits your breakup.",
       },
       { property: "og:title", content: "Your reset plan | SOLACE: BREAKUP RECOVERY" },
       {
@@ -59,7 +60,7 @@ const REASON_KEYS = [
   "lostMyself",
 ] as const;
 
-const STEPS = 13;
+const STEPS = 14;
 
 function Choice({
   options,
@@ -102,6 +103,7 @@ function Questionnaire() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
+  const [processingStage, setProcessingStage] = useState(0);
   const [nameError, setNameError] = useState<string | null>(null);
   const [contactError, setContactError] = useState<string | null>(null);
 
@@ -120,6 +122,26 @@ function Questionnaire() {
     });
     return () => suppressInAppMessages(false);
   }, [userId, navigate, redo]);
+
+  useEffect(() => {
+    if (step !== 11) {
+      setProcessingStage(0);
+      return;
+    }
+
+    const timers = [
+      window.setTimeout(() => setProcessingStage(1), 450),
+      window.setTimeout(() => setProcessingStage(2), 950),
+      window.setTimeout(() => setProcessingStage(3), 1450),
+      window.setTimeout(() => setProcessingStage(4), 2050),
+      window.setTimeout(() => {
+        haptic.success();
+        setStep(12);
+      }, 3400),
+    ];
+
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [step]);
 
   const set = (patch: Answers) => setAnswers((current) => ({ ...current, ...patch }));
 
@@ -518,7 +540,60 @@ function Questionnaire() {
           ),
         };
       }
-      case 11:
+      case 11: {
+        const checklist = [
+          t("questionnaire.processing.goal"),
+          t("questionnaire.processing.startingPoint"),
+          t("questionnaire.processing.journey"),
+        ];
+        return {
+          title: t("questionnaire.processing.title"),
+          hint: t("questionnaire.processing.hint"),
+          body: (
+            <div className="space-y-6" aria-live="polite">
+              <div className="space-y-3">
+                {checklist.map((label, index) => {
+                  const complete = processingStage > index;
+                  return (
+                    <div
+                      key={label}
+                      className={cn(
+                        "flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 transition-all duration-300",
+                        complete ? "translate-y-0 opacity-100" : "translate-y-1 opacity-45",
+                      )}
+                    >
+                      {complete ? (
+                        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                          <Check className="size-4" strokeWidth={3} aria-hidden />
+                        </span>
+                      ) : (
+                        <LoaderCircle className="size-7 shrink-0 animate-spin text-muted-foreground" aria-hidden />
+                      )}
+                      <span className="font-medium">{label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div
+                className={cn(
+                  "text-center transition-all duration-500",
+                  processingStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
+                )}
+              >
+                <div className="flex items-center justify-center gap-2 text-primary">
+                  <Star className="size-7 fill-current" aria-hidden />
+                  <span className="text-3xl font-semibold">4.9</span>
+                </div>
+                <p className="mt-2 text-sm font-medium text-muted-foreground">
+                  {t("questionnaire.processing.trustedBy")}
+                </p>
+              </div>
+            </div>
+          ),
+        };
+      }
+      case 12:
         return {
           title: t("questionnaire.step10.title"),
           hint: t("questionnaire.step10.hint"),
@@ -556,7 +631,7 @@ function Questionnaire() {
           ),
         };
     }
-  }, [step, answers, reasons, t, nameError, contactError, milestoneDate]);
+  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage]);
 
   const canContinue = (() => {
     switch (step) {
@@ -580,7 +655,7 @@ function Questionnaire() {
         return Boolean(answers.checks_social);
       case 9:
         return Boolean((answers.biggest_goal ?? "").trim());
-      case 11:
+      case 12:
         return answers.wants_reminders !== null && answers.wants_reminders !== undefined;
       default:
         return true;
@@ -609,7 +684,7 @@ function Questionnaire() {
         <div className="mt-8">{content.body}</div>
       </div>
 
-      <div className="mt-8 flex items-center gap-3">
+      {step !== 11 ? <div className="mt-8 flex items-center gap-3">
         {step > 0 ? (
           <Button
             variant="ghost"
@@ -634,7 +709,7 @@ function Questionnaire() {
               ? t("questionnaire.step9.commitCta")
               : t("questionnaire.continue")}
         </Button>
-      </div>
+      </div> : null}
     </div>
   );
 }
