@@ -640,7 +640,50 @@ function Questionnaire() {
             </div>
           ),
         };
-      case 13:
+      case 13: {
+        // "PRIVACY / NO-ADS / TRUST" — informational, Continue advances.
+        const points = [
+          {
+            icon: <Lock className="size-5" aria-hidden />,
+            title: t("questionnaire.privacy.privateTitle"),
+            body: t("questionnaire.privacy.privateBody"),
+          },
+          {
+            icon: <Ban className="size-5" aria-hidden />,
+            title: t("questionnaire.privacy.noAdsTitle"),
+            body: t("questionnaire.privacy.noAdsBody"),
+          },
+          {
+            icon: <ShieldCheck className="size-5" aria-hidden />,
+            title: t("questionnaire.privacy.dataTitle"),
+            body: t("questionnaire.privacy.dataBody"),
+          },
+        ];
+        return {
+          title: t("questionnaire.privacy.title"),
+          hint: t("questionnaire.privacy.hint"),
+          body: (
+            <div className="space-y-3">
+              {points.map((point) => (
+                <SoftCard key={point.title}>
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-sky text-on-tint">
+                      {point.icon}
+                    </span>
+                    <div>
+                      <p className="font-semibold">{point.title}</p>
+                      <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
+                        {point.body}
+                      </p>
+                    </div>
+                  </div>
+                </SoftCard>
+              ))}
+            </div>
+          ),
+        };
+      }
+      case 14:
         return {
           title: t("questionnaire.step10.title"),
           hint: t("questionnaire.step10.hint"),
