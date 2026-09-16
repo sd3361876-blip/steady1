@@ -826,31 +826,33 @@ function Questionnaire() {
 
   if (step === 15) {
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+5rem)]">
-        <div className="flex items-center gap-3 px-5 pt-3" aria-label={`${step + 1} of ${STEPS}`}>
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+      <div className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col overflow-hidden">
+        <img
+          src={trialOfferArtwork.url}
+          alt="Start your 7-day free Steady trial with daily emotional support, no-contact tools, a personalized healing journey, and progress tracking"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+          loading="eager"
+          decoding="async"
+        />
+
+        <div
+          className="relative z-10 flex items-center gap-3 px-5 pt-[calc(env(safe-area-inset-top)+0.75rem)]"
+          aria-label={`${step + 1} of ${STEPS}`}
+        >
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/15">
             <div
               className="h-full rounded-full bg-primary"
               style={{ width: `${((step + 1) / STEPS) * 100}%` }}
             />
           </div>
-          <span className="text-xs font-medium text-muted-foreground">
+          <span className="text-xs font-medium text-foreground/70">
             {step + 1}/{STEPS}
           </span>
         </div>
-        <main className="animate-step-in flex min-h-0 flex-1 items-start justify-center overflow-hidden">
-          <img
-            src={trialOfferArtwork.url}
-            alt="Start your 7-day free Steady trial with daily emotional support, no-contact tools, a personalized healing journey, and progress tracking"
-            className="h-full max-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-5rem)] w-full object-contain object-top"
-            loading="eager"
-            decoding="async"
-          />
-        </main>
 
-        <div className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-md bg-background px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+        <div className="relative z-10 mt-auto px-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
           <Button
-            className="press h-12 w-full rounded-xl text-sm font-semibold shadow-lg"
+            className="press h-14 w-full rounded-full text-base font-semibold shadow-xl"
             disabled={saving}
             onClick={() => void finish()}
           >
@@ -861,6 +863,7 @@ function Questionnaire() {
       </div>
     );
   }
+
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
