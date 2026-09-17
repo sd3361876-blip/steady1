@@ -117,6 +117,7 @@ function Questionnaire() {
   const [saving, setSaving] = useState(false);
   const [processingStage, setProcessingStage] = useState(0);
   const [reviewing, setReviewing] = useState(false);
+  const [trialVideoReady, setTrialVideoReady] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [contactError, setContactError] = useState<string | null>(null);
 
@@ -154,6 +155,10 @@ function Questionnaire() {
     ];
 
     return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [step]);
+
+  useEffect(() => {
+    if (step !== 15) setTrialVideoReady(false);
   }, [step]);
 
   const set = (patch: Answers) => setAnswers((current) => ({ ...current, ...patch }));
@@ -844,13 +849,21 @@ function Questionnaire() {
         <div className="relative aspect-[9/16] max-h-dvh w-full max-w-[calc(100dvh*9/16)]">
           <video
             src={trialOfferVideo.url}
-            className="pointer-events-none absolute inset-0 h-full w-full bg-white object-contain"
+            className={cn(
+              "pointer-events-none absolute inset-0 h-full w-full bg-white object-contain",
+              trialVideoReady ? "visible" : "invisible",
+            )}
             autoPlay
             muted
             playsInline
+            loop
+            preload="auto"
             controls={false}
             disablePictureInPicture
             controlsList="nodownload nofullscreen noremoteplayback"
+            tabIndex={-1}
+            onCanPlay={() => setTrialVideoReady(true)}
+            onContextMenu={(event) => event.preventDefault()}
             aria-hidden="true"
           />
 
