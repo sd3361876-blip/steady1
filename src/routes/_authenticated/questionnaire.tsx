@@ -625,8 +625,9 @@ function Questionnaire() {
         };
       }
       case 12:
-        // "Would you rate Steady?" — optional, never incentivised. Both
-        // buttons continue to the next onboarding screen.
+        // "Would you rate Steady?" — optional, never incentivised. "Rate
+        // Steady" opens the Play Store listing (Android stays here); only
+        // "Maybe later" advances to the next onboarding screen.
         return {
           title: t("questionnaire.rate.title"),
           hint: t("questionnaire.rate.hint"),
