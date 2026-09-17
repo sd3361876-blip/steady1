@@ -30,6 +30,8 @@ import { clampToNow, isFutureTimestamp } from "@/lib/datetime";
 import { activity } from "@/lib/badgeActivity";
 import { haptic } from "@/lib/native/haptics";
 import { requestAppReview } from "@/lib/native/inAppReview";
+import { openPlayStoreListing } from "@/lib/native/playStore";
+import { isNative } from "@/lib/native/platform";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
@@ -217,15 +219,21 @@ function Questionnaire() {
     setStep((current) => Math.min(STEPS - 1, current + 1));
   };
 
-  // Rating screen: opens the Google Play in-app review sheet, then continues
-  // regardless of whether it appeared, was dismissed or a review was left.
-  const rateAndContinue = async () => {
+  // Rating screen: on Android, "Rate Steady" opens the app's Google Play Store
+  // listing (native store intent first, browser fallback) and stays on this
+  // screen — only "Maybe later" continues. On the web, the previous behaviour
+  // is kept: open the store listing, then continue regardless of the outcome.
+  const rateSteady = async () => {
     setReviewing(true);
     try {
+      if (isNative()) {
+        await openPlayStoreListing();
+        return;
+      }
       await requestAppReview();
+      advance();
     } finally {
       setReviewing(false);
-      advance();
     }
   };
 
@@ -617,8 +625,9 @@ function Questionnaire() {
         };
       }
       case 12:
-        // "Would you rate Steady?" — optional, never incentivised. Both
-        // buttons continue to the next onboarding screen.
+        // "Would you rate Steady?" — optional, never incentivised. "Rate
+        // Steady" opens the Play Store listing (Android stays here); only
+        // "Maybe later" advances to the next onboarding screen.
         return {
           title: t("questionnaire.rate.title"),
           hint: t("questionnaire.rate.hint"),
@@ -631,9 +640,10 @@ function Questionnaire() {
               </div>
               <div className="space-y-3">
                 <Button
+                  type="button"
                   className="press h-13 w-full rounded-2xl text-base"
                   disabled={reviewing}
-                  onClick={() => void rateAndContinue()}
+                  onClick={() => void rateSteady()}
                 >
                   {t("questionnaire.rate.cta")}
                 </Button>
