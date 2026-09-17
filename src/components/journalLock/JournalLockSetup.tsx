@@ -103,6 +103,11 @@ export function JournalLockSetup({
             ? "Your PIN is never stored — only a scrambled check value kept in this phone's secure storage. Biometrics stay with Android; STEADY never sees them."
             : "In the browser this check value is kept in browser storage, which is less secure than the Android app's device-secured storage. Biometric unlock is only available in the Android app."}
         </p>
+        <p className="rounded-2xl border border-border p-3 text-xs text-muted-foreground">
+          Keeping your PIN and biometric access is your responsibility. If you forget your PIN or
+          lose biometric access, you may not be able to unlock your journal — there is no recovery,
+          backup PIN, or reset by us.
+        </p>
         <div className="flex gap-2">
           <Button variant="secondary" className="press h-12 flex-1 rounded-2xl" onClick={onCancel}>
             Not now
