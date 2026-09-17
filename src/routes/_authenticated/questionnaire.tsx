@@ -599,7 +599,7 @@ function Questionnaire() {
                     <Leaf className="absolute top-[36%] left-[7%] size-9 -rotate-12 fill-current" />
                     <Leaf className="absolute top-[56%] left-[9%] size-9 rotate-8 fill-current" />
                     <Leaf className="absolute top-[72%] left-[21%] size-9 rotate-28 fill-current" />
-                    <Leaf className="absolute bottom-0 left-[39%] size-9 rotate-48 fill-current" />
+                    <Leaf className="absolute bottom-0 left-[39%] size-9 rotate-[48deg] fill-current" />
                   </div>
                   <div className="absolute inset-y-0 right-0 w-1/2">
                     <Leaf className="absolute top-0 right-[32%] size-9 rotate-45 fill-current -scale-x-100" />
@@ -607,7 +607,7 @@ function Questionnaire() {
                     <Leaf className="absolute top-[36%] right-[7%] size-9 rotate-12 fill-current -scale-x-100" />
                     <Leaf className="absolute top-[56%] right-[9%] size-9 -rotate-8 fill-current -scale-x-100" />
                     <Leaf className="absolute top-[72%] right-[21%] size-9 -rotate-28 fill-current -scale-x-100" />
-                    <Leaf className="absolute right-[39%] bottom-0 size-9 -rotate-48 fill-current -scale-x-100" />
+                    <Leaf className="absolute right-[39%] bottom-0 size-9 rotate-[-48deg] fill-current -scale-x-100" />
                   </div>
                 </div>
                 <p className="relative mt-5 whitespace-nowrap text-[0.72rem] leading-none font-bold tracking-wide text-foreground uppercase">
