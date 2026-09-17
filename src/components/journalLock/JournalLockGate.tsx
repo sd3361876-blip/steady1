@@ -7,63 +7,40 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import {
   clearJournalUnlocked,
+  DEFAULT_CONFIG,
   ensureBackgroundWatcher,
   isJournalUnlocked,
   loadJournalLockConfig,
   type JournalLockConfig,
 } from "@/lib/journalLock/state";
-import {
-  describeJournalLockError,
-  getJournalLockDiagnostic,
-  subscribeJournalLockDiagnostics,
-  type JournalLockDiagnostic,
-} from "@/lib/journalLock/secureStore";
 
 /**
  * Shows the Journal Lock screen in place of the journal until the user
  * authenticates. Only the journal is gated — the rest of STEADY is untouched.
  * The unlocked session lives in memory and ends when this screen unmounts
  * (leaving the journal) or after the app has been backgrounded too long.
+ *
+ * The lock is OFF by default; the saved configuration is what keeps it ON
+ * across app restarts until the user turns it off.
  */
 export function JournalLockGate({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const userId = user?.id ?? "";
   const [config, setConfig] = useState<JournalLockConfig | null>(null);
   const [unlocked, setUnlocked] = useState(false);
-  // TEMPORARY diagnostics for the blank Android Journal — remove after the fix.
-  const [loadPhase, setLoadPhase] = useState<"pending" | "done" | "failed">("pending");
-  const [loadError, setLoadError] = useState<{
-    name: string;
-    message: string;
-    stack?: string | undefined;
-  } | null>(null);
-  const [storageDiagnostic, setStorageDiagnostic] = useState<JournalLockDiagnostic | null>(
-    getJournalLockDiagnostic(),
-  );
-
-  useEffect(
-    () => subscribeJournalLockDiagnostics((diagnostic) => setStorageDiagnostic(diagnostic)),
-    [],
-  );
 
   useEffect(() => {
     ensureBackgroundWatcher();
     let alive = true;
     setConfig(null);
-    setLoadPhase("pending");
-    setLoadError(null);
+    const apply = (next: JournalLockConfig) => {
+      if (!alive) return;
+      setConfig(next);
+      setUnlocked(!next.enabled || isJournalUnlocked(userId));
+    };
     void loadJournalLockConfig(userId)
-      .then((next) => {
-        if (!alive) return;
-        setLoadPhase("done");
-        setConfig(next);
-        setUnlocked(!next.enabled || isJournalUnlocked(userId));
-      })
-      .catch((error) => {
-        if (!alive) return;
-        setLoadPhase("failed");
-        setLoadError(describeJournalLockError(error));
-      });
+      .then(apply)
+      .catch(() => apply(DEFAULT_CONFIG));
     return () => {
       alive = false;
       // Leaving the journal ends the unlocked session.
@@ -81,48 +58,14 @@ export function JournalLockGate({ children }: { children: ReactNode }) {
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [config?.enabled, unlocked, userId]);
 
-  // TEMPORARY: instead of a blank screen, show the live load status + any
-  // secure-storage error while the Journal Lock configuration is unresolved.
-  // Security behavior is unchanged — nothing is unlocked or bypassed here.
   if (!config) {
     return (
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-10">
-        <h1 className="text-lg font-semibold">Journal — temporary diagnostic</h1>
-        <p className="text-sm text-muted-foreground">
-          Journal Lock configuration load:{" "}
-          <span className="font-mono font-semibold text-foreground">
-            {loadPhase === "pending" ? "PENDING" : loadPhase === "failed" ? "FAILED" : "SUCCESS"}
-          </span>
-        </p>
-        {loadPhase === "pending" && (
-          <div className="rounded-xl border border-border p-4 text-sm">
-            <p className="font-semibold">The secure-storage operation is still pending.</p>
-            <p className="mt-2 text-muted-foreground">
-              No result and no error has been returned yet — the call appears to be hanging.
-            </p>
-          </div>
-        )}
-        {loadError && (
-          <div className="rounded-xl border border-border p-4">
-            <p className="text-sm font-semibold">
-              loadJournalLockConfig threw: {loadError.name}
-            </p>
-            <p className="mt-1 break-words font-mono text-xs">{loadError.message}</p>
-            {loadError.stack && (
-              <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono text-[10px] text-muted-foreground">
-                {loadError.stack}
-              </pre>
-            )}
-          </div>
-        )}
-        {storageDiagnostic && (
-          <div className="rounded-xl border border-border p-4">
-            <p className="text-sm font-semibold">Secure-storage layer (live)</p>
-            <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap break-words font-mono text-[10px]">
-              {JSON.stringify(storageDiagnostic, null, 2)}
-            </pre>
-          </div>
-        )}
+      <div className="mx-auto flex min-h-screen w-full max-w-md items-center justify-center px-5">
+        <div
+          className="size-8 animate-spin rounded-full border-2 border-muted border-t-primary"
+          aria-label="Loading"
+          role="status"
+        />
       </div>
     );
   }
