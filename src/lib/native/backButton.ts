@@ -7,6 +7,16 @@ import { isNative } from "./platform";
 /** Screens that act as a root destination: back here should background the app. */
 const ROOT_PATHS = new Set(["/", "/home", "/auth", "/start-trial"]);
 
+let onboardingBackHandler: (() => boolean) | null = null;
+
+/** Registers a temporary step-level back action for the active onboarding screen. */
+export function setOnboardingBackHandler(handler: (() => boolean) | null): () => void {
+  onboardingBackHandler = handler;
+  return () => {
+    if (onboardingBackHandler === handler) onboardingBackHandler = null;
+  };
+}
+
 /** Closes the topmost Radix overlay (dialog/drawer/sheet), if one is open. */
 function closeTopOverlay(): boolean {
   const overlay = document.querySelector(
@@ -48,6 +58,8 @@ export function initAndroidBackButton(
         }
 
         if (closeTopOverlay()) return;
+
+        if (onboardingBackHandler?.()) return;
 
         const path = window.location.pathname;
         if (ROOT_PATHS.has(path)) {
