@@ -35,7 +35,7 @@ import { isNative } from "@/lib/native/platform";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
-import trialOfferArtwork from "@/assets/onboarding/steady-trial-1080x1920.png.asset.json";
+import trialOfferVideo from "@/assets/onboarding/onboard.mp4.asset.json";
 
 export const Route = createFileRoute("/_authenticated/questionnaire")({
   validateSearch: (search: Record<string, unknown>): { redo?: boolean } =>
@@ -836,18 +836,22 @@ function Questionnaire() {
 
   if (step === 15) {
     return (
-      // Full-screen paywall: the 9:16 artwork IS the screen. No progress bar,
+      // Full-screen paywall: the 9:16 video IS the screen. No progress bar,
       // no card. The stage keeps the exact 9:16 composition (never cropped or
       // stretched) and is centered — full width on phones, a centered portrait
       // viewport on desktop.
       <div className="flex h-dvh w-full items-center justify-center overflow-hidden bg-white">
         <div className="relative aspect-[9/16] max-h-dvh w-full max-w-[calc(100dvh*9/16)]">
-          <img
-            src={trialOfferArtwork.url}
-            alt="Start your 7-day free Steady trial with daily emotional support, no-contact tools, a personalized healing journey, and progress tracking"
-            className="absolute inset-0 h-full w-full object-contain"
-            loading="eager"
-            decoding="async"
+          <video
+            src={trialOfferVideo.url}
+            className="pointer-events-none absolute inset-0 h-full w-full object-contain"
+            autoPlay
+            muted
+            playsInline
+            controls={false}
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
+            aria-hidden="true"
           />
 
           <div className="absolute inset-x-0 bottom-[5%] z-10 px-[8%]">

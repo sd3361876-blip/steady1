@@ -335,7 +335,7 @@ export const screensEn = {
       urgeControl: "No-contact & urge-control tools",
       healingJourney: "Personalized healing journey",
       trackProgress: "Track your progress",
-      cta: "See my FREE offer",
+      cta: "See What’s Included",
     },
     step10: {
       title: "Want gentle reminders?",
