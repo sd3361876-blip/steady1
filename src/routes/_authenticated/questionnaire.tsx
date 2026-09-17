@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Ban,
   Check,
-  Leaf,
   LoaderCircle,
   Lock,
   ShieldCheck,
@@ -591,7 +590,7 @@ function Questionnaire() {
                 <span className="block">{t("questionnaire.processing.wreathLine3")}</span>
               </p>
 
-              <blockquote className="animate-fade-in mt-4 w-full max-w-xs border-l-2 border-primary/60 pl-4 text-left">
+              <blockquote className="animate-quote-fade mt-4 w-full max-w-xs border-l-2 border-primary/60 pl-4 text-left">
                 <p className="text-lg leading-snug font-medium text-foreground italic">
                   {t("questionnaire.processing.quote")}
                 </p>

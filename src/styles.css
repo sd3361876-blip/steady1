@@ -288,14 +288,14 @@
   }
 }
 
-@keyframes promise-reveal {
+@keyframes quote-fade {
   from {
     opacity: 0;
-    transform: scale(0.94);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -377,8 +377,8 @@
   animation: slide-next 0.32s var(--ease-native) both;
 }
 
-@utility animate-promise-reveal {
-  animation: promise-reveal 0.6s var(--ease-native) both;
+@utility animate-quote-fade {
+  animation: quote-fade 0.6s var(--ease-native) both;
 }
 
 @utility animate-leaf {
