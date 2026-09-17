@@ -55,7 +55,9 @@ export function JournalLockSetting() {
         <div className="flex-1">
           <p className="font-medium">Journal Lock</p>
           <p className="text-sm text-muted-foreground">
-            Protect your private journal with a 4-digit PIN or biometrics.
+            Protect your private journal with a 4-digit PIN or biometrics. Off by default; once on,
+            it stays on until you turn it off. Keeping your PIN and biometric access is your
+            responsibility — if you forget them, your journal may stay locked.
           </p>
         </div>
         <Switch
