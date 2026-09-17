@@ -219,15 +219,21 @@ function Questionnaire() {
     setStep((current) => Math.min(STEPS - 1, current + 1));
   };
 
-  // Rating screen: opens the Google Play in-app review sheet, then continues
-  // regardless of whether it appeared, was dismissed or a review was left.
-  const rateAndContinue = async () => {
+  // Rating screen: on Android, "Rate Steady" opens the app's Google Play Store
+  // listing (native store intent first, browser fallback) and stays on this
+  // screen — only "Maybe later" continues. On the web, the previous behaviour
+  // is kept: open the store listing, then continue regardless of the outcome.
+  const rateSteady = async () => {
     setReviewing(true);
     try {
+      if (isNative()) {
+        await openPlayStoreListing();
+        return;
+      }
       await requestAppReview();
+      advance();
     } finally {
       setReviewing(false);
-      advance();
     }
   };
 
