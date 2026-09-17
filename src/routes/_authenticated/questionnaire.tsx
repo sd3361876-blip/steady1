@@ -840,11 +840,11 @@ function Questionnaire() {
       // no card. The stage keeps the exact 9:16 composition (never cropped or
       // stretched) and is centered — full width on phones, a centered portrait
       // viewport on desktop.
-      <div className="flex h-dvh w-full items-center justify-center overflow-hidden bg-white">
+      <div className="flex h-dvh w-full items-center justify-center overflow-hidden bg-white text-foreground">
         <div className="relative aspect-[9/16] max-h-dvh w-full max-w-[calc(100dvh*9/16)]">
           <video
             src={trialOfferVideo.url}
-            className="pointer-events-none absolute inset-0 h-full w-full object-contain"
+            className="pointer-events-none absolute inset-0 h-full w-full bg-white object-contain"
             autoPlay
             muted
             playsInline
