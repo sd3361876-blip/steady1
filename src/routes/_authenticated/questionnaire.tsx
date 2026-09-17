@@ -35,7 +35,7 @@ import { isNative } from "@/lib/native/platform";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
-import trialOfferVideo from "@/assets/onboarding/onboard.mp4.asset.json";
+import trialOfferVideo from "@/assets/onboarding/onboard-2.mp4.asset.json";
 
 export const Route = createFileRoute("/_authenticated/questionnaire")({
   validateSearch: (search: Record<string, unknown>): { redo?: boolean } =>
