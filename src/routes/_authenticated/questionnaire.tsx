@@ -834,7 +834,7 @@ function Questionnaire() {
     }
   })();
 
-  if (step === 15) {
+  if (true) {
     return (
       // Full-screen paywall: the 9:16 video IS the screen. No progress bar,
       // no card. The stage keeps the exact 9:16 composition (never cropped or
