@@ -285,6 +285,7 @@ export const screensEn = {
       wreathLine1: "You're not alone",
       wreathLine2: "Thousands are choosing",
       wreathLine3: "themselves with Steady",
+      healingStarts: "Your healing starts with you",
       reviewPrompt: "Would you rate STEADY?",
       reviewCta: "★★  Rate STEADY ★★",
     },
