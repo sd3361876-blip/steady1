@@ -639,9 +639,10 @@ function Questionnaire() {
               </div>
               <div className="space-y-3">
                 <Button
+                  type="button"
                   className="press h-13 w-full rounded-2xl text-base"
                   disabled={reviewing}
-                  onClick={() => void rateAndContinue()}
+                  onClick={() => void rateSteady()}
                 >
                   {t("questionnaire.rate.cta")}
                 </Button>
