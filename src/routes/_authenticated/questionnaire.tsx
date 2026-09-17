@@ -30,6 +30,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { analytics, humanizeError } from "@/lib/analytics";
 import { clampToNow, isFutureTimestamp } from "@/lib/datetime";
 import { activity } from "@/lib/badgeActivity";
+import { setOnboardingBackHandler } from "@/lib/native/backButton";
 import { haptic } from "@/lib/native/haptics";
 import { requestAppReview } from "@/lib/native/inAppReview";
 import { openPlayStoreListing } from "@/lib/native/playStore";
@@ -140,6 +141,15 @@ function Questionnaire() {
 
   useEffect(() => {
     if (step !== 15) setTrialVideoReady(false);
+  }, [step]);
+
+  useEffect(() => {
+    if (step !== 11) return;
+    return setOnboardingBackHandler(() => {
+      haptic.light();
+      setStep(10);
+      return true;
+    });
   }, [step]);
 
   const set = (patch: Answers) => setAnswers((current) => ({ ...current, ...patch }));
