@@ -4,11 +4,13 @@ import {
   ArrowRight,
   Ban,
   Check,
+  Leaf,
   LoaderCircle,
   Lock,
   ShieldCheck,
   Star,
 } from "lucide-react";
+import { AppReview } from "@capawesome/capacitor-app-review";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -115,7 +117,6 @@ function Questionnaire() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
-  const [processingStage, setProcessingStage] = useState(0);
   const [reviewing, setReviewing] = useState(false);
   const [trialVideoReady, setTrialVideoReady] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -136,26 +137,6 @@ function Questionnaire() {
     });
     return () => suppressInAppMessages(false);
   }, [userId, navigate, redo]);
-
-  useEffect(() => {
-    if (step !== 11) {
-      setProcessingStage(0);
-      return;
-    }
-
-    const timers = [
-      window.setTimeout(() => setProcessingStage(1), 450),
-      window.setTimeout(() => setProcessingStage(2), 950),
-      window.setTimeout(() => setProcessingStage(3), 1450),
-      window.setTimeout(() => setProcessingStage(4), 2050),
-      window.setTimeout(() => {
-        haptic.success();
-        setStep(12);
-      }, 3400),
-    ];
-
-    return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, [step]);
 
   useEffect(() => {
     if (step !== 15) setTrialVideoReady(false);
@@ -237,6 +218,18 @@ function Questionnaire() {
       }
       await requestAppReview();
       advance();
+    } finally {
+      setReviewing(false);
+    }
+  };
+
+  const requestPromiseReview = async () => {
+    haptic.light();
+    setReviewing(true);
+    try {
+      if (isNative()) await AppReview.requestReview();
+    } catch {
+      // Google Play may decline to show the dialog; reviewing stays optional.
     } finally {
       setReviewing(false);
     }
@@ -577,53 +570,47 @@ function Questionnaire() {
         };
       }
       case 11: {
-        const checklist = [
-          t("questionnaire.processing.goal"),
-          t("questionnaire.processing.startingPoint"),
-          t("questionnaire.processing.journey"),
-        ];
         return {
           title: t("questionnaire.processing.title"),
           hint: t("questionnaire.processing.hint"),
           body: (
-            <div className="space-y-6" aria-live="polite">
-              <div className="space-y-3">
-                {checklist.map((label, index) => {
-                  const complete = processingStage > index;
-                  return (
-                    <div
-                      key={label}
-                      className={cn(
-                        "flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 transition-all duration-300",
-                        complete ? "translate-y-0 opacity-100" : "translate-y-1 opacity-45",
-                      )}
-                    >
-                      {complete ? (
-                        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                          <Check className="size-4" strokeWidth={3} aria-hidden />
-                        </span>
-                      ) : (
-                        <LoaderCircle className="size-7 shrink-0 animate-spin text-muted-foreground" aria-hidden />
-                      )}
-                      <span className="font-medium">{label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div
-                className={cn(
-                  "text-center transition-all duration-500",
-                  processingStage >= 4 ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
-                )}
-              >
-                <div className="flex items-center justify-center gap-2 text-primary">
-                  <Star className="size-7 fill-current" aria-hidden />
-                  <span className="text-3xl font-semibold">4.9</span>
+            <div className="flex flex-col items-center text-center">
+              <div className="animate-promise-reveal relative flex h-64 w-full max-w-[18rem] items-center justify-center text-primary">
+                <div className="absolute inset-4 rounded-[50%] border border-primary/25" aria-hidden />
+                <div className="absolute inset-y-3 left-0 w-14" aria-hidden>
+                  <Leaf className="absolute top-4 left-7 size-8 -rotate-45" />
+                  <Leaf className="absolute top-14 left-3 size-8 -rotate-25" />
+                  <Leaf className="absolute top-25 left-0 size-8 -rotate-6" />
+                  <Leaf className="absolute bottom-14 left-3 size-8 rotate-20" />
+                  <Leaf className="absolute bottom-4 left-7 size-8 rotate-45" />
                 </div>
-                <p className="mt-2 text-sm font-medium text-muted-foreground">
-                  {t("questionnaire.processing.trustedBy")}
+                <div className="absolute inset-y-3 right-0 w-14" aria-hidden>
+                  <Leaf className="absolute top-4 right-7 size-8 rotate-45 -scale-x-100" />
+                  <Leaf className="absolute top-14 right-3 size-8 rotate-25 -scale-x-100" />
+                  <Leaf className="absolute top-25 right-0 size-8 rotate-6 -scale-x-100" />
+                  <Leaf className="absolute right-3 bottom-14 size-8 -rotate-20 -scale-x-100" />
+                  <Leaf className="absolute right-7 bottom-4 size-8 -rotate-45 -scale-x-100" />
+                </div>
+                <p className="relative max-w-48 text-sm leading-relaxed font-semibold tracking-wide uppercase">
+                  {t("questionnaire.processing.wreathLine1")}
+                  <br />
+                  {t("questionnaire.processing.wreathLine2")}
+                  <br />
+                  {t("questionnaire.processing.wreathLine3")}
                 </p>
+              </div>
+              <div className="mt-4 w-full max-w-xs">
+                <p className="mb-3 text-base font-semibold">
+                  {t("questionnaire.processing.reviewPrompt")}
+                </p>
+                <Button
+                  type="button"
+                  className="press h-13 w-full rounded-2xl text-base"
+                  disabled={reviewing}
+                  onClick={() => void requestPromiseReview()}
+                >
+                  {t("questionnaire.processing.reviewCta")}
+                </Button>
               </div>
             </div>
           ),
@@ -808,7 +795,7 @@ function Questionnaire() {
           body: null,
         };
     }
-  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, processingStage, reviewing]);
+  }, [step, answers, reasons, t, nameError, contactError, milestoneDate, reviewing]);
 
   const canContinue = (() => {
     switch (step) {
@@ -901,15 +888,25 @@ function Questionnaire() {
         </span>
       </div>
 
-      <div key={step} className="animate-step-in mt-10 flex-1">
-        <h1 className="text-[1.75rem] leading-tight font-semibold tracking-tight">
+      <div
+        key={step}
+        className={cn("animate-step-in mt-10 flex-1", step === 11 && "flex flex-col items-center")}
+      >
+        <h1
+          className={cn(
+            "text-[1.75rem] leading-tight font-semibold tracking-tight",
+            step === 11 && "w-full text-center",
+          )}
+        >
           {content.title}
         </h1>
-        <p className="mt-2 text-muted-foreground">{content.hint}</p>
-        <div className="mt-8">{content.body}</div>
+        <p className={cn("mt-2 text-muted-foreground", step === 11 && "max-w-sm text-center")}>
+          {content.hint}
+        </p>
+        <div className={cn("mt-8", step === 11 && "w-full")}>{content.body}</div>
       </div>
 
-      {step !== 11 && step !== 12 ? <div className="mt-8 flex items-center gap-3">
+      {step !== 12 ? <div className="mt-8 flex items-center gap-3">
         {step > 0 ? (
           <Button
             variant="ghost"
