@@ -919,7 +919,7 @@ function Questionnaire() {
         <p className={cn("mt-2 text-muted-foreground", step === 11 && "max-w-sm text-center")}>
           {content.hint}
         </p>
-        <div className={cn("mt-8", step === 11 && "w-full")}>{content.body}</div>
+        <div className={cn("mt-8", step === 11 && "mt-4 w-full")}>{content.body}</div>
       </div>
 
       {step !== 12 ? <div className="mt-8 flex items-center gap-3">
