@@ -591,29 +591,11 @@ function Questionnaire() {
                 <span className="block">{t("questionnaire.processing.wreathLine3")}</span>
               </p>
 
-              <div className="animate-promise-reveal relative mt-3 flex h-52 w-full max-w-[20rem] items-center justify-center text-primary">
-                <div className="absolute inset-0" aria-hidden>
-                  <div className="absolute inset-y-0 left-0 w-1/2">
-                    <Leaf className="absolute top-0 left-[32%] size-9 -rotate-45 fill-current" />
-                    <Leaf className="absolute top-[17%] left-[16%] size-9 -rotate-30 fill-current" />
-                    <Leaf className="absolute top-[36%] left-[7%] size-9 -rotate-12 fill-current" />
-                    <Leaf className="absolute top-[56%] left-[9%] size-9 rotate-8 fill-current" />
-                    <Leaf className="absolute top-[72%] left-[21%] size-9 rotate-28 fill-current" />
-                    <Leaf className="absolute bottom-0 left-[39%] size-9 rotate-[48deg] fill-current" />
-                  </div>
-                  <div className="absolute inset-y-0 right-0 w-1/2">
-                    <Leaf className="absolute top-0 right-[32%] size-9 rotate-45 fill-current -scale-x-100" />
-                    <Leaf className="absolute top-[17%] right-[16%] size-9 rotate-30 fill-current -scale-x-100" />
-                    <Leaf className="absolute top-[36%] right-[7%] size-9 rotate-12 fill-current -scale-x-100" />
-                    <Leaf className="absolute top-[56%] right-[9%] size-9 -rotate-8 fill-current -scale-x-100" />
-                    <Leaf className="absolute top-[72%] right-[21%] size-9 -rotate-28 fill-current -scale-x-100" />
-                    <Leaf className="absolute right-[39%] bottom-0 size-9 rotate-[-48deg] fill-current -scale-x-100" />
-                  </div>
-                </div>
-                <p className="relative mt-5 whitespace-nowrap text-[0.72rem] leading-none font-bold tracking-wide text-foreground uppercase">
-                  {t("questionnaire.processing.healingStarts")}
+              <blockquote className="animate-fade-in mt-4 w-full max-w-xs border-l-2 border-primary/60 pl-4 text-left">
+                <p className="text-lg leading-snug font-medium text-foreground italic">
+                  {t("questionnaire.processing.quote")}
                 </p>
-              </div>
+              </blockquote>
 
               <div className="mt-2 w-full max-w-xs">
                 <p className="mb-2 text-base font-semibold">
