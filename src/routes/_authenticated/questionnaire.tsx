@@ -590,14 +590,14 @@ function Questionnaire() {
                 <span className="block">{t("questionnaire.processing.wreathLine3")}</span>
               </p>
 
-              <blockquote className="animate-quote-fade mt-4 w-full max-w-xs border-l-2 border-primary/60 pl-4 text-left">
-                <p className="text-lg leading-snug font-medium text-foreground italic">
+              <blockquote className="animate-quote-fade mt-8 w-full max-w-sm border-l-2 border-primary/60 pl-5 text-left">
+                <p className="text-xl leading-relaxed font-medium text-foreground italic">
                   {t("questionnaire.processing.quote")}
                 </p>
               </blockquote>
 
-              <div className="mt-2 w-full max-w-xs">
-                <p className="mb-2 text-base font-semibold">
+              <div className="mt-10 w-full max-w-sm">
+                <p className="mb-3 text-base font-semibold">
                   {t("questionnaire.processing.reviewPrompt")}
                 </p>
                 <Button
@@ -900,7 +900,14 @@ function Questionnaire() {
         <p className={cn("mt-2 text-muted-foreground", step === 11 && "max-w-sm text-center")}>
           {content.hint}
         </p>
-        <div className={cn("mt-8", step === 11 && "mt-4 w-full")}>{content.body}</div>
+        <div
+          className={cn(
+            "mt-8",
+            step === 11 && "mt-4 flex w-full flex-1 flex-col justify-center",
+          )}
+        >
+          {content.body}
+        </div>
       </div>
 
       {step !== 12 ? <div className="mt-8 flex items-center gap-3">
