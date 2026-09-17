@@ -30,6 +30,8 @@ import { clampToNow, isFutureTimestamp } from "@/lib/datetime";
 import { activity } from "@/lib/badgeActivity";
 import { haptic } from "@/lib/native/haptics";
 import { requestAppReview } from "@/lib/native/inAppReview";
+import { openPlayStoreListing } from "@/lib/native/playStore";
+import { isNative } from "@/lib/native/platform";
 import { suppressInAppMessages } from "@/lib/monitoring/inAppMessaging";
 import { requestNotificationPermission, syncReminders } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
