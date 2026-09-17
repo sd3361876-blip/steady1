@@ -584,33 +584,39 @@ function Questionnaire() {
           title: t("questionnaire.processing.title"),
           hint: t("questionnaire.processing.hint"),
           body: (
-            <div className="flex flex-col items-center text-center">
-              <div className="animate-promise-reveal relative flex h-64 w-full max-w-[18rem] items-center justify-center text-primary">
-                <div className="absolute inset-4 rounded-[50%] border border-primary/25" aria-hidden />
-                <div className="absolute inset-y-3 left-0 w-14" aria-hidden>
-                  <Leaf className="absolute top-4 left-7 size-8 -rotate-45" />
-                  <Leaf className="absolute top-14 left-3 size-8 -rotate-25" />
-                  <Leaf className="absolute top-25 left-0 size-8 -rotate-6" />
-                  <Leaf className="absolute bottom-14 left-3 size-8 rotate-20" />
-                  <Leaf className="absolute bottom-4 left-7 size-8 rotate-45" />
+            <div className="flex w-full flex-col items-center text-center">
+              <p className="text-sm leading-relaxed font-semibold tracking-wide text-foreground uppercase">
+                <span className="block">{t("questionnaire.processing.wreathLine1")}</span>
+                <span className="block">{t("questionnaire.processing.wreathLine2")}</span>
+                <span className="block">{t("questionnaire.processing.wreathLine3")}</span>
+              </p>
+
+              <div className="animate-promise-reveal relative mt-3 flex h-52 w-full max-w-[20rem] items-center justify-center text-primary">
+                <div className="absolute inset-0" aria-hidden>
+                  <div className="absolute inset-y-0 left-0 w-1/2">
+                    <Leaf className="absolute top-0 left-[32%] size-9 -rotate-45 fill-current" />
+                    <Leaf className="absolute top-[17%] left-[16%] size-9 -rotate-30 fill-current" />
+                    <Leaf className="absolute top-[36%] left-[7%] size-9 -rotate-12 fill-current" />
+                    <Leaf className="absolute top-[56%] left-[9%] size-9 rotate-8 fill-current" />
+                    <Leaf className="absolute top-[72%] left-[21%] size-9 rotate-28 fill-current" />
+                    <Leaf className="absolute bottom-0 left-[39%] size-9 rotate-48 fill-current" />
+                  </div>
+                  <div className="absolute inset-y-0 right-0 w-1/2">
+                    <Leaf className="absolute top-0 right-[32%] size-9 rotate-45 fill-current -scale-x-100" />
+                    <Leaf className="absolute top-[17%] right-[16%] size-9 rotate-30 fill-current -scale-x-100" />
+                    <Leaf className="absolute top-[36%] right-[7%] size-9 rotate-12 fill-current -scale-x-100" />
+                    <Leaf className="absolute top-[56%] right-[9%] size-9 -rotate-8 fill-current -scale-x-100" />
+                    <Leaf className="absolute top-[72%] right-[21%] size-9 -rotate-28 fill-current -scale-x-100" />
+                    <Leaf className="absolute right-[39%] bottom-0 size-9 -rotate-48 fill-current -scale-x-100" />
+                  </div>
                 </div>
-                <div className="absolute inset-y-3 right-0 w-14" aria-hidden>
-                  <Leaf className="absolute top-4 right-7 size-8 rotate-45 -scale-x-100" />
-                  <Leaf className="absolute top-14 right-3 size-8 rotate-25 -scale-x-100" />
-                  <Leaf className="absolute top-25 right-0 size-8 rotate-6 -scale-x-100" />
-                  <Leaf className="absolute right-3 bottom-14 size-8 -rotate-20 -scale-x-100" />
-                  <Leaf className="absolute right-7 bottom-4 size-8 -rotate-45 -scale-x-100" />
-                </div>
-                <p className="relative max-w-48 text-sm leading-relaxed font-semibold tracking-wide uppercase">
-                  {t("questionnaire.processing.wreathLine1")}
-                  <br />
-                  {t("questionnaire.processing.wreathLine2")}
-                  <br />
-                  {t("questionnaire.processing.wreathLine3")}
+                <p className="relative mt-5 whitespace-nowrap text-[0.72rem] leading-none font-bold tracking-wide text-foreground uppercase">
+                  {t("questionnaire.processing.healingStarts")}
                 </p>
               </div>
-              <div className="mt-4 w-full max-w-xs">
-                <p className="mb-3 text-base font-semibold">
+
+              <div className="mt-2 w-full max-w-xs">
+                <p className="mb-2 text-base font-semibold">
                   {t("questionnaire.processing.reviewPrompt")}
                 </p>
                 <Button
