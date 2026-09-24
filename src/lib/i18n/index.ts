@@ -19,9 +19,9 @@ if (!i18n.isInitialized) {
   // has copy — otherwise components would flash raw keys. English only.
   const initOptions = {
     resources,
-    lng: "en",
+    lng: "bn-IN",
     fallbackLng: "en",
-    supportedLngs: ["en"],
+    supportedLngs: ["en", "bn-IN"],
     nonExplicitSupportedLngs: true,
     initImmediate: false,
     react: { useSuspense: false },
