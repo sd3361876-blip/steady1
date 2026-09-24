@@ -4,7 +4,9 @@
  */
 
 import { screensEn } from "./en/screens";
+import { screensBn } from "./bn-IN/screens";
 import { uiEn } from "./en/ui";
+import { uiBn } from "./bn-IN/ui";
 
 export const en = {
   common: {
@@ -172,6 +174,9 @@ function mergeCatalog(...parts: Record<string, unknown>[]): Record<string, unkno
 
 const english = mergeCatalog(en as never, screensEn as never, uiEn as never);
 
-export const resources = { en: { translation: english } } as {
-  en: { translation: typeof en };
-};
+const bengali = mergeCatalog(en as never, screensBn as never, uiBn as never);
+
+export const resources = {
+  en: { translation: english },
+  "bn-IN": { translation: bengali },
+} as const;
