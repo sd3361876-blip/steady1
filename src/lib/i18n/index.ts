@@ -33,7 +33,12 @@ if (!i18n.isInitialized) {
     returnNull: false,
   };
 
-  void i18n.use(initReactI18next).init(initOptions as Parameters<typeof i18n.init>[0]);
+  void i18n
+  .use(initReactI18next)
+  .init(initOptions as Parameters<typeof i18n.init>[0])
+  .then(() => {
+    console.log("STEADY i18n language:", i18n.language);
+  });
 
   // A code-split chunk can evaluate its own copy of react-i18next before this
   // module runs; setting the default instance makes evaluation order irrelevant.
