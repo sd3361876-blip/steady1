@@ -36,8 +36,15 @@ if (!i18n.isInitialized) {
   void i18n
   .use(initReactI18next)
   .init(initOptions as Parameters<typeof i18n.init>[0])
-  .then(() => {
+  .then(async () => {
+    // Bengali test build: explicitly set Bengali after initialization as well.
+    await i18n.changeLanguage("bn-IN");
     console.log("STEADY i18n language:", i18n.language);
+    console.log("STEADY Bengali auth title:", i18n.t("auth.welcomeTitle"));
+    // Temporary debugging access. Remove before production release.
+    if (typeof window !== "undefined") {
+      (window as Window & { __STEADY_I18N__?: typeof i18n }).__STEADY_I18N__ = i18n;
+    }
   });
 
   // A code-split chunk can evaluate its own copy of react-i18next before this
